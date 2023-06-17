@@ -8,19 +8,41 @@
 
 <h5>Wi-Fi Ninja 2</h5>
 <table class="u-full-width">
+  {% for value in data.values() %}
+  <thead>
+    <tr>
+      <th>Sensor Type</th>
+      <th>Sensor Location</th>
+      <th>Sensor IP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>    
+      <td>{{ value.sensor_type }}</td>
+      <td>{{ value.sensor_location }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+  <table class="u-full-width">
     <thead>
       <tr>
         <th>BSS</th>
-        <th>Slot</th>
-        <th>Radio</th>
-        <th>Ch. Util. %</th>
-        <th>Clients</th>
-        <th>Ch. Changes</th>
-        <th>Last Ch. Change</th>
+        <th>Channel</th>
+        <th>Signal</th>
+        <th>SSID</th>
+        <th>Data Rates</th>
+        <th>Country</th>
+        <th>Authentication</th>
+        <th>Pairwise Cipher</th>
+        <th>Group Cipher</th>
+        <th>STA Count</th>
+        <th>Ch. Util.</th>
       </tr>
     </thead>
     <tbody>
-    {% for item in data_list %}
+    {% for item in data %}
       <tr>
         <td>{{ item[0] }}</td>
       </tr>
