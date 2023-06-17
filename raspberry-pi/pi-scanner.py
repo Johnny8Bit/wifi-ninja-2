@@ -22,8 +22,8 @@ def send(parse_input):
     scanner_data = {}
     scanner_data["sensor"] = {}
     scanner_data["sensor"]["sensor_type"] = SENSOR_TYPE
-    scanner_data["sensor"]["sensor-location"] = SENSOR_LOCATION 
-    scanner_data["results"] = parse_input
+    scanner_data["sensor"]["sensor_location"] = SENSOR_LOCATION 
+    scanner_data["sensor"]["results"] = parse_input
 
     dashboard_api = f"http://{DASHBOARD_IP}:{DASHBOARD_PORT}/PostSensorData"
     headers = {"api_key" : DASHBOARD_API_KEY}
@@ -67,7 +67,7 @@ def parse(scan_input):
                 pass
             try:
                 data_rates = re.match("Supported rates: (.+)", line).group(1)
-                bss_data[bssid]["data_rates"] = data_rates.rstrip()
+                bss_data[bssid]["data_rates"] = (",").join(data_rates.rstrip().split()) #Insert commas for contiguous string
             except AttributeError:
                 pass
             try:
@@ -97,7 +97,7 @@ def parse(scan_input):
                 pass
             try:
                 ch_util = re.match("\* channel utilisation: (\d{1,3}/\d{1,3})", line).group(1)
-                bss_data[bssid]["ch_util"] = ch_util
+                bss_data[bssid]["ch_util"] = str(round((int(ch_util.split("/")[0]) / int(ch_util.split("/")[1])) * 100)) #Convert from base 255 to %
             except AttributeError:
                 pass
 
@@ -109,7 +109,7 @@ def run():
     subprocess.run(["echo", "Wi-Fi Ninja 2 : Running"])
     while True:
         try:
-            iw_output = subprocess.run(["sudo", "iw", "dev", WLAN_INTERFACE, "scan" ], capture_output=True)
+            iw_output = subprocess.run(["sudo", "iw", "dev", WLAN_INTERFACE, "scan", "-u"], capture_output=True)
             parse(iw_output.stdout)
             time.sleep(SCAN_INTERVAL)
 
