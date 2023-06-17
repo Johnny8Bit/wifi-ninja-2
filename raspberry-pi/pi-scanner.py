@@ -8,9 +8,12 @@ import requests
 
 
 WLAN_INTERFACE = "wlan0"
+SCAN_INTERVAL = "15" #seconds
 SENSOR_TYPE = "raspberry-pi"
 SENSOR_LOCATION = "default"
 DASHBOARD_API_KEY = "12345"
+DASHBOARD_IP = "192.168.6.6"
+DASHBOARD_PORT = "80"
 
 
 def send(parse_input):
@@ -21,7 +24,15 @@ def send(parse_input):
     scanner_data["sensor"]["sensor_type"] = SENSOR_TYPE
     scanner_data["sensor"]["sensor-location"] = SENSOR_LOCATION 
     scanner_data["results"] = parse_input
-    print(json.dumps(scanner_data, indent=4))
+
+    dashboard_api = f"http://{DASHBOARD_IP}:{DASHBOARD_PORT}/PostSensorData"
+    headers = {"api_key" : DASHBOARD_API_KEY}
+    try:
+        requests.post(dashboard_api, headers=headers, data=json.dumps(scanner_data), verify=False, timeout=2)
+    except requests.exceptions.ConnectTimeout:
+        pass
+    except requests.exceptions.ConnectionError:
+        pass
 
 
 def parse(scan_input):
@@ -100,6 +111,7 @@ def run():
         try:
             iw_output = subprocess.run(["sudo", "iw", "dev", WLAN_INTERFACE, "scan" ], capture_output=True)
             parse(iw_output.stdout)
+            time.sleep(SCAN_INTERVAL)
 
         except KeyboardInterrupt:
             subprocess.run(["clear"])
