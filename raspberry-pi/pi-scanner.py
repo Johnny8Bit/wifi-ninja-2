@@ -8,7 +8,7 @@ import requests
 
 
 WLAN_INTERFACE = "wlan0"
-SCAN_INTERVAL = "15" #seconds
+SCAN_INTERVAL = 15 #seconds
 SENSOR_TYPE = "raspberry-pi"
 SENSOR_LOCATION = "default"
 DASHBOARD_API_KEY = "12345"
