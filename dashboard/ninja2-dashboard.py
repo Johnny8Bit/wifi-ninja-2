@@ -14,9 +14,12 @@ sensor_data = {}
 def data():
 
     global sensor_data
+    
     received_auth = request.headers.get("api_key")
     if received_auth == DASHBOARD_API_KEY:
-        sensor_data.update(json.loads(request.data))
+        received_data = json.loads(request.data)
+        received_data["sensor"]["sensor_ip"] = request.remote_addr
+        sensor_data.update(received_data)
         return 'OK', 200
     else:
         return 'Nope', 401
@@ -24,7 +27,7 @@ def data():
 
 @dashboard.route('/', methods = ['GET'])
 def index():
-    print(sensor_data)
+
     return render_template('index.html', data = sensor_data)
 
 
