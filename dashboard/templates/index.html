@@ -49,7 +49,7 @@
   {% for bss, info in details["sensor"]["results"].items() %}
     <tr>
       <td>{{ bss }}</td>
-      <td>-</td>
+      <td>{{ info.ap_name }}</td>
       <td>{{ info.channel }}</td>
       <td>{{ info.signal }}</td>
       <td>{{ info.ssid }}</td>
