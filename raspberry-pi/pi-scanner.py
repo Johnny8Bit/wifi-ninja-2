@@ -109,6 +109,11 @@ def parse(scan_input):
                 bss_data[bssid]["ch_util"] = str(round((int(ch_util.split("/")[0]) / int(ch_util.split("/")[1])) * 100)) #Convert from base 255 to %
             except AttributeError:
                 pass
+            try:
+                ap_name = re.match("Unknown IE \(133\): ([0-9a-fA-F]{2} ){10}(([0-9a-fA-F]{2} ){15})", line).group(2).rstrip()
+                bss_data[bssid]["ap_name"] = bytes.fromhex(ap_name.replace(" ", "")).decode("utf-8")
+            except AttributeError:
+                pass
 
     send(bss_data)
 
