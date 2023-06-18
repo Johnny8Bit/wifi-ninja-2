@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from flask import Flask, render_template, request
 
@@ -18,8 +19,8 @@ def data():
     received_auth = request.headers.get("api_key")
     if received_auth == DASHBOARD_API_KEY:
         received_data = json.loads(request.data)
-        received_data["sensor"]["sensor_ip"] = request.remote_addr
-        sensor_data.update(received_data)
+        received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
+        sensor_data[request.remote_addr] = received_data
         return 'OK', 200
     else:
         return 'Nope', 401

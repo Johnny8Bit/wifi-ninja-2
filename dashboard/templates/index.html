@@ -7,20 +7,24 @@
 <body>
 
 <h5>Wi-Fi Ninja 2</h5>
+{% for sensor, details in data.items() %}
 <table class="u-full-width">
-  {% for value in data.values() %}
   <thead>
     <tr>
-      <th>Sensor Type</th>
       <th>Sensor Location</th>
+      <th>Sensor MAC</th>
       <th>Sensor IP</th>
+      <th>Sensor Type</th>
+      <th>Last Update</th>
     </tr>
   </thead>
   <tbody>
-    <tr>    
-      <td>{{ value.sensor_type }}</td>
-      <td>{{ value.sensor_location }}</td>
-      <td>{{ value.sensor_ip }}</td>
+    <tr>
+      <td>{{ details.sensor.sensor_location }}</td>
+      <td>{{ details.sensor.sensor_mac }}</td>
+      <td>{{ sensor }}</td>
+      <td>{{ details.sensor.sensor_type }}</td>
+      <td>{{ details.sensor.sensor_lastheard }}</td>
     </tr>
   </tbody>
 </table>
@@ -30,7 +34,7 @@
       <th>BSS</th>
       <th>AP Name</th>
       <th>Channel</th>
-      <th>Signal</th>
+      <th>Signal (dBm)</th>
       <th>SSID</th>
       <th>Data Rates</th>
       <th>Country</th>
@@ -42,26 +46,25 @@
     </tr>
   </thead>
   <tbody>
-    {% for value in data.values() %}
-    {% for bss, details in value["results"].items() %}
+  {% for bss, info in details["sensor"]["results"].items() %}
     <tr>
       <td>{{ bss }}</td>
       <td>-</td>
-      <td>{{ details.channel }}</td>
-      <td>{{ details.signal }}</td>
-      <td>{{ details.ssid }}</td>
-      <td>{{ details.rata_rates }}</td>
-      <td>{{ details.country }}</td>
-      <td>{{ details.authentication }}</td>
-      <td>{{ details.pairwise_cipher }}</td>
-      <td>{{ details.group_cipher }}</td>
-      <td>{{ details.sta_count }}</td>
-      <td>{{ details.ch_util }}</td>
+      <td>{{ info.channel }}</td>
+      <td>{{ info.signal }}</td>
+      <td>{{ info.ssid }}</td>
+      <td>{{ info.data_rates }}</td>
+      <td>{{ info.country }}</td>
+      <td>{{ info.authentication }}</td>
+      <td>{{ info.pairwise_cipher }}</td>
+      <td>{{ info.group_cipher }}</td>
+      <td>{{ info.sta_count }}</td>
+      <td>{{ info.ch_util }}</td>
     </tr>
-    {% endfor %}
-    {% endfor %}
+  {% endfor %}
   </tbody>
 </table>
-  {% endfor %}
+{% endfor %}
+
 </body>
 </html>
