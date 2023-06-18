@@ -8,12 +8,20 @@ import requests
 
 
 WLAN_INTERFACE = "wlan0"
-SCAN_INTERVAL = 15 #seconds
-SENSOR_TYPE = "raspberry-pi"
-SENSOR_LOCATION = "default"
 DASHBOARD_API_KEY = "12345"
 DASHBOARD_IP = "192.168.6.6"
 DASHBOARD_PORT = "80"
+
+
+class Sensor():
+
+    def __init__(self, client_mac):
+        self.mac = re.search("addr (([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2})", client_mac.decode("utf-8").lstrip()).group(1).upper()
+
+    location = "default"
+    type = "raspberry-pi"
+    scan_interval = 15 #seconds
+
 
 
 def send(parse_input):
@@ -21,8 +29,9 @@ def send(parse_input):
 
     scanner_data = {}
     scanner_data["sensor"] = {}
-    scanner_data["sensor"]["sensor_type"] = SENSOR_TYPE
-    scanner_data["sensor"]["sensor_location"] = SENSOR_LOCATION 
+    scanner_data["sensor"]["sensor_mac"] = pi.mac
+    scanner_data["sensor"]["sensor_type"] = pi.type
+    scanner_data["sensor"]["sensor_location"] = pi.location
     scanner_data["sensor"]["results"] = parse_input
 
     dashboard_api = f"http://{DASHBOARD_IP}:{DASHBOARD_PORT}/PostSensorData"
@@ -45,7 +54,7 @@ def parse(scan_input):
         for line in bss.splitlines():
             line = line.lstrip()
             try:
-                bssid = re.match("(BSS )?(([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2})", line).group(2)
+                bssid = re.match("(BSS )?(([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2})", line).group(2).upper()
                 if bssid not in bss_data.keys():
                     bss_data[bssid] = {}
             except AttributeError:
@@ -67,7 +76,7 @@ def parse(scan_input):
                 pass
             try:
                 data_rates = re.match("Supported rates: (.+)", line).group(1)
-                bss_data[bssid]["data_rates"] = (",").join(data_rates.rstrip().split()) #Insert commas for contiguous string
+                bss_data[bssid]["data_rates"] = data_rates.rstrip().replace(".0", "")
             except AttributeError:
                 pass
             try:
@@ -106,12 +115,12 @@ def parse(scan_input):
 
 def run():
 
-    subprocess.run(["echo", "Wi-Fi Ninja 2 : Running"])
+
     while True:
         try:
             iw_output = subprocess.run(["sudo", "iw", "dev", WLAN_INTERFACE, "scan", "-u"], capture_output=True)
             parse(iw_output.stdout)
-            time.sleep(SCAN_INTERVAL)
+            time.sleep(pi.scan_interval)
 
         except KeyboardInterrupt:
             subprocess.run(["clear"])
@@ -120,5 +129,10 @@ def run():
 
 
 if __name__ == '__main__':
+
+
+    subprocess.run(["echo", "Wi-Fi Ninja 2 : Running"])
+    mac_addr = subprocess.run(["iw", "dev", WLAN_INTERFACE, "info"], capture_output=True)
+    pi = Sensor(mac_addr.stdout)
 
     run()
