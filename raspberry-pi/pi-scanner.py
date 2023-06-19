@@ -117,7 +117,7 @@ def parse(scan_input):
             except AttributeError:
                 pass
 
-    send(bss_data)
+    send({k: v for k, v in sorted(bss_data.items(), key=lambda x: x[1]["signal"])})
 
 
 def run():
