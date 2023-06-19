@@ -8,6 +8,8 @@ import requests
 
 
 WLAN_INTERFACE = "wlan0"
+
+
 DASHBOARD_API_KEY = "12345"
 DASHBOARD_IP = "192.168.6.6"
 DASHBOARD_PORT = "80"
