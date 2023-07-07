@@ -48,11 +48,17 @@ def data():
 
 
 @dashboard.route('/', methods = ['GET'])
-def index():
+def view_sensor():
 
     remove_stale()
         
-    return render_template('index.html', data = sensor_data)
+    return render_template('sensor.html', data = sensor_data)
+
+
+@dashboard.route('/controller', methods = ['GET'])
+def view_controller():
+        
+    return render_template('controller.html', data = sensor_data)
 
 
 if __name__ == '__main__':
