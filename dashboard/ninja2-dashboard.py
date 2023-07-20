@@ -5,10 +5,11 @@ from flask import Flask, render_template, request
 
 DASHBOARD_API_KEY = "12345"
 
-
 dashboard = Flask(__name__)
 
 sensor_data = {}
+wlc_data = {}
+ap_data = {}
 
 
 def remove_stale():
@@ -33,7 +34,7 @@ def remove_stale():
 
 
 @dashboard.route('/PostSensorData', methods = ['POST'])
-def data():
+def post_sensor_data():
 
     global sensor_data
     
@@ -44,21 +45,61 @@ def data():
         sensor_data[request.remote_addr] = received_data
         return 'OK', 200
     else:
-        return 'Nope', 401
+        return 'NO', 401
+
+
+@dashboard.route('/PostWLCData', methods = ['POST'])
+def post_client_data():
+
+    global wlc_data
+    
+    received_auth = request.headers.get("api_key")
+    if received_auth == DASHBOARD_API_KEY:
+        received_data = json.loads(request.data)
+        received_data["lastheard"] = str(datetime.now())[:-7]
+        wlc_data = received_data
+        return 'OK', 200
+    else:
+        return 'NO', 401
+
+
+@dashboard.route('/PostAPData', methods = ['POST'])
+def post_ap_data():
+
+    global ap_data
+    
+    received_auth = request.headers.get("api_key")
+    if received_auth == DASHBOARD_API_KEY:
+        received_data = json.loads(request.data)
+        ap_data = received_data
+        return 'OK', 200
+    else:
+        return 'NO', 401
 
 
 @dashboard.route('/', methods = ['GET'])
 def view_sensor():
 
     remove_stale()
-        
     return render_template('sensor.html', data = sensor_data)
 
 
 @dashboard.route('/controller', methods = ['GET'])
 def view_controller():
-        
-    return render_template('controller.html', data = sensor_data)
+    
+    return render_template('controller.html', data = wlc_data)
+
+
+@dashboard.route('/ap5', methods = ['GET'])
+def view_aps_5():
+    
+    return render_template('ap5.html', data = ap_data)
+
+
+@dashboard.route('/ap6', methods = ['GET'])
+def view_aps_6():
+    
+    return render_template('ap6.html', data = ap_data)
 
 
 if __name__ == '__main__':
