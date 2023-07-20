@@ -48,19 +48,21 @@
     {% endif %}
     <br>
     {% if data["lan_interface"] is defined %}
-    <h6>Throughput : {{ data["lan_interface"] }}</h6>
+    <h5>{{ data["lan_interface"] }}</h5>
     {% endif %}
 
     {% if data["in_bytes"] is defined and data["out_bytes"] is defined %}
     <table class="u-full-width">
       <thead>
         <tr>
+          <th></th>
           <th>IN</th>
           <th>OUT</th>
         </tr>
       </thead>
       <tbody>
         <tr>
+          <td>Throughput</td>
           <td>{{ data["in_bytes"] }}</td>
           <td>{{ data["out_bytes"] }}</td>
         </tr>
