@@ -7,7 +7,7 @@ import subprocess
 import requests
 
 
-WLAN_INTERFACE = "wlan0"
+WLAN_INTERFACE = "wlan1"
 
 
 DASHBOARD_API_KEY = "12345"
@@ -64,6 +64,11 @@ def parse(scan_input):
             try:
                 channel = re.match("DS Parameter set: channel (\d{1,3})", line).group(1)
                 bss_data[bssid]["channel"] = channel
+            except AttributeError:
+                pass
+            try:
+               freq = re.match("freq: (.+)", line).group(1)
+               bss_data[bssid]["freq"] = freq
             except AttributeError:
                 pass
             try:
