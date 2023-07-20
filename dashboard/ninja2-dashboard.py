@@ -71,6 +71,7 @@ def post_ap_data():
     received_auth = request.headers.get("api_key")
     if received_auth == DASHBOARD_API_KEY:
         received_data = json.loads(request.data)
+        received_data["lastheard"] = str(datetime.now())[:-7]
         ap_data = received_data
         return 'OK', 200
     else:
@@ -88,6 +89,12 @@ def view_sensor():
 def view_controller():
     
     return render_template('controller.html', data = wlc_data)
+
+
+@dashboard.route('/ap2', methods = ['GET'])
+def view_aps_2():
+    
+    return render_template('ap2.html', data = ap_data)
 
 
 @dashboard.route('/ap5', methods = ['GET'])

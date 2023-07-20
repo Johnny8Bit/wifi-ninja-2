@@ -20,8 +20,8 @@
     <h6>Last Update : {{ data["lastheard"] }}</h6>
     {% endif %}
     
-    {% if data["stations_6"] is defined %}
-    <h6>Busiest APs by client count - 6GHz</h6>
+    {% if data["stations_2"] is defined %}
+    <h6>Busiest APs by client count - 2.4GHz</h6>
     <table class="u-full-width">
       <thead>
         <tr>
@@ -32,7 +32,7 @@
           <th>Clients</th>
         </tr>
       </thead>
-      {% for radio in data["stations_6"] %}
+      {% for radio in data["stations_2"] %}
       <tbody>
         <tr>
           <td>{{ radio[0] }}</td>
@@ -53,8 +53,8 @@
       </tbody>
     </table>
     {% endif %}
-    {% if data["stations_6"] is defined %}
-    <h6>Busiest APs by channel utilization - 6GHz</h6>
+    {% if data["stations_2"] is defined %}
+    <h6>Busiest APs by channel utilization - 2.4GHz</h6>
     <table class="u-full-width">
       <thead>
         <tr>
@@ -65,7 +65,7 @@
           <th>Ch Util</th>
         </tr>
       </thead>
-      {% for radio in data["ch_util_6"] %}
+      {% for radio in data["ch_util_2"] %}
       <tbody>
         <tr>
           <td>{{ radio[0] }}</td>
