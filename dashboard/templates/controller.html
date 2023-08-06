@@ -20,24 +20,47 @@
     <h6>Last Update : {{ data["lastheard"] }}</h6>
     {% endif %}
 
-    {% if data["all_clients"] is defined %}
-    <h5>Total Clients : {{ data["all_clients"] }}</h5>
+    {% if data["all-clients"] is defined %}
+    <h5>Total Clients : {{ data["all-clients"] }}</h5>
     {% endif %}
 
-    {% if data["max_clients"] is defined %}
-    <h5>Max. Clients : {{ data["max_clients"] }}</h5>
+    {% if data["max-clients"] is defined %}
+    <h5>Max. Clients : {{ data["max-clients"] }}</h5>
     {% endif %}
 
-    {% if data["per_phy"] is defined %}
+    {% if data["client-states"] is defined %}
     <table class="u-full-width">
       <thead>
         <tr>
-          <th>Wi-Fi PHY</th>
+          <th>Auth</th>
+          <th>Mobility</th>
+          <th>IP Learn</th>
+          <th>WebAuth</th>
+          <th>Run</th>
+          <th>Delete</th>
+          <th>Random MAC</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          {% for state in data["client-states"].values() %}
+          <td>{{ state }}</td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+    {% endif %}
+
+    {% if data["per-phy"] is defined %}
+    <table class="u-full-width">
+      <thead>
+        <tr>
+          <th>Wi-Fi (PHY)</th>
           <th>Clients</th>
         </tr>
       </thead>
       <tbody>
-      {% for phy, clients in data["per_phy"].items() %}
+      {% for phy, clients in data["per-phy"].items() %}
         <tr>
           <td>{{ phy }}</td>
           <td>{{ clients }}</td>
@@ -46,25 +69,49 @@
       </tbody>
     </table>
     {% endif %}
-    <br>
-    {% if data["lan_interface"] is defined %}
-    <h5>{{ data["lan_interface"] }}</h5>
+
+    {% if data["top-os"] is defined %}
+    <table class="u-full-width">
+      <thead>
+        <tr>
+          <th>Client Operating System</th>
+          <th>Distribution</th>
+        </tr>
+      </thead>
+      {% for os, percentage in data["top-os"].items() %}
+      <tbody>
+        <tr>
+          <td>{{ os }}</td>
+          <td>{{ percentage }}</td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
     {% endif %}
 
-    {% if data["in_bytes"] is defined and data["out_bytes"] is defined %}
+    <br>
+    {% if data["lan-interface"] is defined %}
+    <h5>{{ data["lan-interface"] }}</h5>
+    {% endif %}
+
+    {% if data["in-bytes"] is defined and data["out-bytes"] is defined and data["in-drops"] is defined and data["out-drops"] is defined%}
     <table class="u-full-width">
       <thead>
         <tr>
           <th></th>
-          <th>IN</th>
-          <th>OUT</th>
+          <th>IN (Total)</th>
+          <th>IN (Drops)</th>
+          <th>OUT (Total)</th>
+          <th>OUT (Drops)</th>
         </tr>
       </thead>
       <tbody>
         <tr>
           <td>Throughput</td>
-          <td>{{ data["in_bytes"] }}</td>
-          <td>{{ data["out_bytes"] }}</td>
+          <td>{{ data["in-bytes"] }}</td>
+          <td>{{ data["in-drops"] }}</td>
+          <td>{{ data["out-bytes"] }}</td>
+          <td>{{ data["out-drops"] }}</td>
         </tr>
       </tbody>
     </table>

@@ -10,8 +10,7 @@ def run():
     #subprocess.run(["echo", "NETCONF collector : Running"])
     try:
         while True:
-            wlcLib.netconf_ap_data()
-            wlcLib.netconf_wlc_data()
+            wlcLib.netconf_collect()
             time.sleep(1)
                 
     except KeyboardInterrupt:
@@ -22,7 +21,7 @@ def run():
 
 if __name__ == '__main__':
 
-    logging.basicConfig(level=logging.ERROR,
+    logging.basicConfig(level=logging.WARNING,
                         format="%(asctime)s (%(name)s) %(levelname)s:%(message)s", 
                         datefmt="%m/%d/%Y %H:%M:%S")
     run()
