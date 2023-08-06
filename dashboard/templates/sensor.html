@@ -1,81 +1,66 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <link rel="stylesheet" href="static/skeleton.css">
-    <meta http-equiv="refresh" content="5">
-  </head>
-  <body>
-    <div>
-      <a href="https://github.com/Johnny8Bit/wifi-ninja-2" target="_blank" rel="noopener noreferrer"></a><img src="/static/ninja-logo.png" style="vertical-align: middle;" width="52px"/>
-      <span style="vertical-align: middle;font-size: 20px;">&nbsp;&nbsp;&nbsp;Wi-Fi Ninja 2</span>
-    </div>
-    <br>
-      <a class="button" href="/">Sensor</a>
-      <a class="button" href="controller">Controller</a>
-      <a class="button" href="/ap2">AP 2.4GHz</a>
-      <a class="button" href="/ap5">AP 5GHz</a>
-      <a class="button" href="/ap6">AP 6GHz</a>
-    <br>
+{% extends "header.html" %}
+{% block content %}
 
-    {% for sensor, details in data.items() %}
-    <table class="u-full-width">
-      <thead>
-        <tr>
-          <th>Sensor Location</th>
-          <th>Sensor MAC</th>
-          <th>Sensor IP</th>
-          <th>Sensor Type</th>
-          <th>Last Update</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>{{ details.sensor.sensor_location }}</td>
-          <td>{{ details.sensor.sensor_mac }}</td>
-          <td>{{ sensor }}</td>
-          <td>{{ details.sensor.sensor_type }}</td>
-          <td>{{ details.sensor.sensor_lastheard }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <table class="u-full-width">
-      <thead>
-        <tr>
-          <th>BSS</th>
-          <th>AP Name</th>
-          <th>Frequency</th>
-          <th>Channel</th>
-          <th>Signal (dBm)</th>
-          <th>SSID</th>
-          <th>Data Rates</th>
-          <th>Country</th>
-          <th>Authentication</th>
-          <th>Pairwise Cipher</th>
-          <th>Group Cipher</th>
-          <th>STA Count</th>
-          <th>Ch.Util.%</th>
-        </tr>
-      </thead>
-      <tbody>
-      {% for bss, info in details["sensor"]["results"].items() %}
-        <tr>
-          <td>{{ bss }}</td>
-          <td>{{ info.ap_name }}</td>
-          <td>{{ info.freq }}</td>
-          <td>{{ info.channel }}</td>
-          <td>{{ info.signal }}</td>
-          <td>{{ info.ssid }}</td>
-          <td>{{ info.data_rates }}</td>
-          <td>{{ info.country }}</td>
-          <td>{{ info.authentication }}</td>
-          <td>{{ info.pairwise_cipher }}</td>
-          <td>{{ info.group_cipher }}</td>
-          <td>{{ info.sta_count }}</td>
-          <td>{{ info.ch_util }}</td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+{% for sensor, details in data.items() %}
+<table class="u-full-width">
+  <thead>
+    <tr>
+      <th>Sensor Location</th>
+      <th>Sensor MAC</th>
+      <th>Sensor IP</th>
+      <th>Sensor Type</th>
+      <th>Last Update</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{{ details.sensor.sensor_location }}</td>
+      <td>{{ details.sensor.sensor_mac }}</td>
+      <td>{{ sensor }}</td>
+      <td>{{ details.sensor.sensor_type }}</td>
+      <td>{{ details.sensor.sensor_lastheard }}</td>
+    </tr>
+  </tbody>
+</table>
+<table class="u-full-width">
+  <thead>
+    <tr>
+      <th>BSS</th>
+      <th>AP Name</th>
+      <th>Frequency</th>
+      <th>Channel</th>
+      <th>Signal (dBm)</th>
+      <th>SSID</th>
+      <th>Data Rates</th>
+      <th>Country</th>
+      <th>Authentication</th>
+      <th>Pairwise Cipher</th>
+      <th>Group Cipher</th>
+      <th>STA Count</th>
+      <th>Ch.Util.%</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for bss, info in details["sensor"]["results"].items() %}
+    <tr>
+      <td>{{ bss }}</td>
+      <td>{{ info.ap_name }}</td>
+      <td>{{ info.freq }}</td>
+      <td>{{ info.channel }}</td>
+      <td>{{ info.signal }}</td>
+      <td>{{ info.ssid }}</td>
+      <td>{{ info.data_rates }}</td>
+      <td>{{ info.country }}</td>
+      <td>{{ info.authentication }}</td>
+      <td>{{ info.pairwise_cipher }}</td>
+      <td>{{ info.group_cipher }}</td>
+      <td>{{ info.sta_count }}</td>
+      <td>{{ info.ch_util }}</td>
+    </tr>
     {% endfor %}
-  </body>
-</html>
+  </tbody>
+</table>
+{% endfor %}
+
+{% endblock %}
+
