@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from collections import Counter
+from collections import Counter, OrderedDict
 
 import commsLib
 import fileLib
@@ -93,9 +93,8 @@ def parse_netconf_clients(input_data):
         log.warning(f"No client PHY data")
         if "per-phy" in init.wlc_data: del init.wlc_data["per-phy"]
     else:
-        if type(client_phy) == dict: #Change to list if only single client on WLC
+        if type(client_phy) in (dict, OrderedDict): #Change to list if only single client on WLC
             client_phy = [client_phy]
-
         for client in client_phy:
             total_clients += 1
             phy = rename_phy(client["ewlc-ms-phy-type"])
@@ -123,7 +122,7 @@ def parse_netconf_devices(input_data):
         log.warning(f"No client device data")
         if "top-os" in init.wlc_data: del init.wlc_data["top-os"]
     else:
-        if type(client_types) == dict: #Change to list if only a single client on WLC
+        if type(client_types) in (dict, OrderedDict): #Change to list if only a single client on WLC
             client_types = [client_types]
 
         os_data = []
@@ -293,26 +292,38 @@ def get_netconf_wireless_rrm_oper():
                         <rx-noise-channel-utilization/>
                     </load>
             </rrm-measurement>
+            <radio-slot>
+                <wtp-mac/>
+                <radio-slot-id/>
+                <radio-data>
+                    <dca-stats>
+                        <chan-changes/>
+                    </dca-stats>
+                </radio-data>
+            </radio-slot>
         </rrm-oper-data>
     '''
     netconf_data = commsLib.netconf_get(filter)
     try:
         ap_rrm_data = netconf_data["data"]["rrm-oper-data"]["rrm-measurement"]
+        ap_radio_slot_data = netconf_data["data"]["rrm-oper-data"]["radio-slot"]
     except KeyError:
-        log.warning(f"No AP RRM data")
+        log.warning(f"No AP RRM/Radio data")
     else:
         for radio in ap_rrm_data:
             init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = radio["load"]["stations"]
             init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = radio["load"]["rx-noise-channel-utilization"]
+        for slot in ap_radio_slot_data:
+            init.ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = slot["radio-data"]["dca-stats"]["chan-changes"]
     finally:
         sort_rrm_data()
 
 
 def sort_rrm_data():
 
-    top_sta_2, top_util_2 = [], []
-    top_sta_5, top_util_5 = [], []
-    top_sta_6, top_util_6 = [], []
+    top_sta_2, top_util_2, top_change_2 = [], [], []
+    top_sta_5, top_util_5, top_change_5 = [], [], []
+    top_sta_6, top_util_6, top_change_6 = [], [], []
 
     for ap in init.ap_data.keys():
         for slot in range(0, 5): #radio slots
@@ -322,6 +333,7 @@ def sort_rrm_data():
                 ap_ch = init.ap_data[ap][str(slot)]["channel"]
                 ap_sta = int(init.ap_data[ap][str(slot)]["stations"])
                 ap_util = int(init.ap_data[ap][str(slot)]["ch_util"])
+                ap_change = int(init.ap_data[ap][str(slot)]["ch_changes"])
 
                 ap_sta_colour = "orange"
                 if ap_sta < AP_CLIENTS_LOW:
@@ -338,14 +350,17 @@ def sort_rrm_data():
                 if init.ap_data[ap][str(slot)]["band"] == "dot11-2-dot-4-ghz-band":    
                     top_sta_2.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
                     top_util_2.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
+                    top_change_2.append((ap_name, ap_slot, ap_ch, ap_change))
 
                 if init.ap_data[ap][str(slot)]["band"] == "dot11-5-ghz-band":    
                     top_sta_5.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
                     top_util_5.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
+                    top_change_5.append((ap_name, ap_slot, ap_ch, ap_change))
 
                 if init.ap_data[ap][str(slot)]["band"] == "dot11-6-ghz-band":
                     top_sta_6.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
                     top_util_6.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
+                    top_change_6.append((ap_name, ap_slot, ap_ch, ap_change))
 
             except KeyError:
                 log.info(f"No data for {ap} slot {slot}")
@@ -356,6 +371,9 @@ def sort_rrm_data():
     init.ap_data_ops["stations_2"] = sorted(top_sta_2, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
     init.ap_data_ops["stations_5"] = sorted(top_sta_5, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
     init.ap_data_ops["stations_6"] = sorted(top_sta_6, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
+    init.ap_data_ops["ch_changes_2"] = sorted(top_change_2, key=lambda tup: tup[3], reverse=True)[0:SEND_TOP]
+    init.ap_data_ops["ch_changes_5"] = sorted(top_change_5, key=lambda tup: tup[3], reverse=True)[0:SEND_TOP]
+    init.ap_data_ops["ch_changes_6"] = sorted(top_change_6, key=lambda tup: tup[3], reverse=True)[0:SEND_TOP]
 
 
 def rename_phy(phy):

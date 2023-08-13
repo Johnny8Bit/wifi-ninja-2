@@ -1,3 +1,4 @@
+import os
 import json
 import logging
 
@@ -7,8 +8,8 @@ import xmltodict
 import requests
 
 DASHBOARD_IP = "127.0.0.1"
-DASHBOARD_PORT = "80"
-DASHBOARD_API_KEY = "12345"
+DASHBOARD_PORT = "8080"
+DASHBOARD_API_KEY = os.environ["DASHBOARD_API_KEY"]
 
 WLC_HOST = "192.168.6.8"
 WLC_USER = "netconf"
@@ -20,7 +21,7 @@ log = logging.getLogger(__name__)
 def send_to_dashboard(api, data):
 
     dashboard_api = f"http://{DASHBOARD_IP}:{DASHBOARD_PORT}/Post{api}Data"
-    headers = {"api_key" : DASHBOARD_API_KEY}
+    headers = {"Api-Key" : DASHBOARD_API_KEY}
     try:
         requests.post(dashboard_api, 
                       headers=headers, 

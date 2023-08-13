@@ -26,11 +26,12 @@ class InitCsv():
 
     def __init__(self):
 
+        self.path = "../logs/"
         self.stamp = str(datetime.now())[:-7].replace(':', "-").replace(" ", "_")
-        self.wlc_filename = f"{self.stamp}_WLC.csv"
-        self.ap_2_filename = f"{self.stamp}_AP2.csv"
-        self.ap_5_filename = f"{self.stamp}_AP2.csv"
-        self.ap_6_filename = f"{self.stamp}_AP2.csv"
+        self.wlc_filename = f"{self.path}{self.stamp}_WLC.csv"
+        self.ap_2_filename = f"{self.path}{self.stamp}_AP2.csv"
+        self.ap_5_filename = f"{self.path}{self.stamp}_AP5.csv"
+        self.ap_6_filename = f"{self.path}{self.stamp}_AP6.csv"
 
         write_csv(self.wlc_filename, WLC_HEADINGS)
 

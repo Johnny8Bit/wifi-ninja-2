@@ -1,9 +1,10 @@
+import os
 import json
 from datetime import datetime
 
 from flask import Flask, render_template, request
 
-DASHBOARD_API_KEY = "12345"
+DASHBOARD_API_KEY = os.environ["DASHBOARD_API_KEY"]
 
 dashboard = Flask(__name__)
 
@@ -38,7 +39,7 @@ def post_sensor_data():
 
     global sensor_data
     
-    received_auth = request.headers.get("api_key")
+    received_auth = request.headers.get("Api-Key")
     if received_auth == DASHBOARD_API_KEY:
         received_data = json.loads(request.data)
         received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
@@ -53,7 +54,7 @@ def post_client_data():
 
     global wlc_data
     
-    received_auth = request.headers.get("api_key")
+    received_auth = request.headers.get("Api-Key")
     if received_auth == DASHBOARD_API_KEY:
         received_data = json.loads(request.data)
         received_data["lastheard"] = str(datetime.now())[:-7]
@@ -68,7 +69,7 @@ def post_ap_data():
 
     global ap_data
     
-    received_auth = request.headers.get("api_key")
+    received_auth = request.headers.get("Api-Key")
     if received_auth == DASHBOARD_API_KEY:
         received_data = json.loads(request.data)
         received_data["lastheard"] = str(datetime.now())[:-7]
@@ -111,4 +112,4 @@ def view_aps_6():
 
 if __name__ == '__main__':
 
-    dashboard.run(host='0.0.0.0', port=80, debug=False)
+    dashboard.run(host='0.0.0.0', port=8080, debug=False)
