@@ -36,8 +36,9 @@
 </table>
 {% endif %}
 
-{% if data["per-phy"] is defined %}
 <table class="u-full-width">
+
+{% if data["per-phy"] is defined %}
   <thead>
     <tr>
       <th>Wi-Fi (PHY)</th>
@@ -52,11 +53,9 @@
     </tr>
     {% endfor %}
   </tbody>
-</table>
 {% endif %}
 
 {% if data["top-os"] is defined %}
-<table class="u-full-width">
   <thead>
     <tr>
       <th>Client Operating System</th>
@@ -71,19 +70,17 @@
     </tr>
   </tbody>
   {% endfor %}
-</table>
 {% endif %}
+
+</table>
 
 <br>
 {% if data["lan-interface"] is defined %}
-<h5>{{ data["lan-interface"] }}</h5>
-{% endif %}
-
 {% if data["in-bytes"] is defined and data["out-bytes"] is defined and data["in-drops"] is defined and data["out-drops"] is defined%}
 <table class="u-full-width">
   <thead>
     <tr>
-      <th></th>
+      <th>{{ data["lan-interface"] }}</th>
       <th>IN (Total)</th>
       <th>IN (Drops)</th>
       <th>OUT (Total)</th>
@@ -92,7 +89,7 @@
   </thead>
   <tbody>
     <tr>
-      <td>Throughput</td>
+      <td></td>
       <td>{{ data["in-bytes"] }}</td>
       <td>{{ data["in-drops"] }}</td>
       <td>{{ data["out-bytes"] }}</td>
@@ -100,6 +97,7 @@
     </tr>
   </tbody>
 </table>
+{% endif %}
 {% endif %}
 
 {% endblock %}

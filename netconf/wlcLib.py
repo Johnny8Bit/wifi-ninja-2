@@ -334,6 +334,7 @@ def sort_rrm_data():
                 ap_sta = int(init.ap_data[ap][str(slot)]["stations"])
                 ap_util = int(init.ap_data[ap][str(slot)]["ch_util"])
                 ap_change = int(init.ap_data[ap][str(slot)]["ch_changes"])
+                ap_change_colour = "grey"
 
                 ap_sta_colour = "orange"
                 if ap_sta < AP_CLIENTS_LOW:
@@ -350,17 +351,17 @@ def sort_rrm_data():
                 if init.ap_data[ap][str(slot)]["band"] == "dot11-2-dot-4-ghz-band":    
                     top_sta_2.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
                     top_util_2.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
-                    top_change_2.append((ap_name, ap_slot, ap_ch, ap_change))
+                    top_change_2.append((ap_name, ap_slot, ap_ch, ap_change_colour, ap_change))
 
                 if init.ap_data[ap][str(slot)]["band"] == "dot11-5-ghz-band":    
                     top_sta_5.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
                     top_util_5.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
-                    top_change_5.append((ap_name, ap_slot, ap_ch, ap_change))
+                    top_change_5.append((ap_name, ap_slot, ap_ch, ap_change_colour, ap_change))
 
                 if init.ap_data[ap][str(slot)]["band"] == "dot11-6-ghz-band":
                     top_sta_6.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
                     top_util_6.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
-                    top_change_6.append((ap_name, ap_slot, ap_ch, ap_change))
+                    top_change_6.append((ap_name, ap_slot, ap_ch, ap_change_colour, ap_change))
 
             except KeyError:
                 log.info(f"No data for {ap} slot {slot}")
@@ -371,9 +372,9 @@ def sort_rrm_data():
     init.ap_data_ops["stations_2"] = sorted(top_sta_2, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
     init.ap_data_ops["stations_5"] = sorted(top_sta_5, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
     init.ap_data_ops["stations_6"] = sorted(top_sta_6, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_changes_2"] = sorted(top_change_2, key=lambda tup: tup[3], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_changes_5"] = sorted(top_change_5, key=lambda tup: tup[3], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_changes_6"] = sorted(top_change_6, key=lambda tup: tup[3], reverse=True)[0:SEND_TOP]
+    init.ap_data_ops["ch_changes_2"] = sorted(top_change_2, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
+    init.ap_data_ops["ch_changes_5"] = sorted(top_change_5, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
+    init.ap_data_ops["ch_changes_6"] = sorted(top_change_6, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
 
 
 def rename_phy(phy):

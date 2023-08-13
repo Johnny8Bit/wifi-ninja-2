@@ -4,17 +4,17 @@
 {% if data["lastheard"] is defined %}
 <h6>Last Update : {{ data["lastheard"] }}</h6>
 {% endif %}
-    
-{% if data["stations_5"] is defined %}
-<h6>Top APs by client count - 5GHz</h6>
+
 <table class="u-full-width">
+
+{% if data["stations_5"] is defined %}
   <thead>
     <tr>
-      <th>AP Name</th>
+      <th>Top APs: Client Count</th>
       <th>Radio Slot</th>
       <th>Channel</th>
       <th>Status</th>
-      <th>Clients</th>
+      <th>Client Count</th>
     </tr>
   </thead>
   {% for radio in data["stations_5"] %}
@@ -36,19 +36,16 @@
   {% endfor %}
     </tr>
   </tbody>
-</table>
 {% endif %}
 
-{% if data["stations_5"] is defined %}
-<h6>Top APs by channel utilization - 5GHz</h6>
-<table class="u-full-width">
+{% if data["ch_util_5"] is defined %}
   <thead>
     <tr>
-      <th>AP Name</th>
+      <th>Top APs: Channel Utilization</th>
       <th>Radio Slot</th>
       <th>Channel</th>
       <th>Status</th>
-      <th>Ch Util</th>
+      <th>Channel Utilization</th>
     </tr>
   </thead>
   {% for radio in data["ch_util_5"] %}
@@ -70,8 +67,34 @@
   {% endfor %}
     </tr>
   </tbody>
-</table>
 {% endif %}
+
+{% if data["ch_changes_5"] is defined %}
+  <thead>
+    <tr>
+      <th>Top APs: Channel Changes</th>
+      <th>Radio Slot</th>
+      <th>Channel</th>
+      <th>Status</th>
+      <th>Channel Changes</th>
+    </tr>
+  </thead>
+  {% for radio in data["ch_changes_5"] %}
+  <tbody>
+    <tr>
+      <td>{{ radio[0] }}</td>
+      <td>{{ radio[1] }}</td>
+      <td>{{ radio[2] }}</td>
+      {% if radio[3] == "grey" %}
+      <td><img src="/static/grey.png" width="25px"></td>
+      {% endif %}
+      <td>{{ radio[4] }}</td>
+  {% endfor %}
+    </tr>
+  </tbody>
+{% endif %}
+
+</table>
 
 {% endblock %}
   
