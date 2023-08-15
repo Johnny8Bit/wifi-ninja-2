@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import logging
 
@@ -34,18 +35,36 @@ def send_to_dashboard(api, data):
         log.error(f"Dashboard error")
 
 
-def netconf_get(filter):
+def netconf_get(filter): #Using xmltodict
 
     try:
-        with manager.connect(host=WLC_HOST,
-                         port=830, 
-                         username=WLC_USER, 
-                         password=WLC_PASS, 
-                         device_params={'name':'iosxe'}, 
-                         hostkey_verify=False) as ncc:
+        with manager.connect(host=WLC_HOST, 
+                             port=830,
+                             username=WLC_USER,
+                             password=WLC_PASS,
+                             device_params={'name':'iosxe'},
+                             hostkey_verify=False) as ncc:
             netconf_output = xmltodict.parse(ncc.get(filter=('subtree', filter)).data_xml)
 
     except transport.errors.SSHError:
         netconf_output = {}
+        log.error(f"NETCONF error")
+    return netconf_output
+
+
+def netconf_get_x(filter): #Using XPath
+
+    try:
+        with manager.connect(host=WLC_HOST, 
+                             port=830,
+                             username=WLC_USER,
+                             password=WLC_PASS,
+                             device_params={'name':'iosxe'},
+                             hostkey_verify=False) as ncc:
+            netconf_output = ncc.get(filter=('subtree', filter)).data_xml
+            netconf_output = re.sub('xmlns="[^"]+"', "", netconf_output)
+
+    except transport.errors.SSHError:
+        netconf_output = ""
         log.error(f"NETCONF error")
     return netconf_output

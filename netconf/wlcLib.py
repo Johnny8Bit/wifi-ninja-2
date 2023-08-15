@@ -1,4 +1,6 @@
 import logging
+import xml.etree.ElementTree as ET
+
 from datetime import datetime
 from collections import Counter, OrderedDict
 
@@ -162,22 +164,22 @@ def get_netconf_interfaces_oper():
             </interface>
         </interfaces>
     '''             
-    netconf_data = commsLib.netconf_get(filter)
+    netconf_data = commsLib.netconf_get_x(filter)
     try:
-        interface_data = netconf_data["data"]["interfaces"]["interface"]
+        interface_data = ET.fromstring(netconf_data).find(".//interface")
     except KeyError:
         log.warning(f"No interface data")
     else:
-        in_octets = change_units(interface_data["statistics"]["in-octets"])
-        out_octets = change_units(interface_data["statistics"]["out-octets-64"])
+        in_octets = change_units(interface_data.find("statistics/in-octets").text)
+        out_octets = change_units(interface_data.find("statistics/out-octets-64").text)
         
-        in_discards = int(interface_data["statistics"]["in-discards"])
-        in_discards_64 = int(interface_data["statistics"]["in-discards-64"])
-        in_unknown_protos = int(interface_data["statistics"]["in-unknown-protos"])
-        in_unknown_protos_64 = int(interface_data["statistics"]["in-unknown-protos-64"])
+        in_discards = int(interface_data.find("statistics/in-discards").text)
+        in_discards_64 = int(interface_data.find("statistics/in-discards-64").text)
+        in_unknown_protos = int(interface_data.find("statistics/in-unknown-protos").text)
+        in_unknown_protos_64 = int(interface_data.find("statistics/in-unknown-protos-64").text)
         in_drops = in_discards + in_discards_64 + in_unknown_protos + in_unknown_protos_64
         
-        out_discards = int(interface_data["statistics"]["out-discards"])
+        out_discards = int(interface_data.find("statistics/out-discards").text)
         out_drops = out_discards
 
         interface_data = {"lan-interface" : WLC_MONITOR_INTERFACE,
@@ -395,16 +397,16 @@ def rename_phy(phy):
 
 def change_units(bytes):
 
-    if len(bytes) > 3:
-        throughput = str(round(int(bytes) / 1000, 1)) + " KB"
-    if len(bytes) > 6:
-        throughput = str(round(int(bytes) / 1000000, 1)) + " MB"
-    if len(bytes) > 9:
-        throughput = str(round(int(bytes) / 1000000000, 1)) + " GB"
-    if len(bytes) > 12:
-        throughput = str(round(int(bytes) / 1000000000000, 1)) + " TB"
     if len(bytes) > 15:
         throughput = str(round(int(bytes) / 1000000000000000, 1)) + " PB"
+    elif len(bytes) > 12:
+        throughput = str(round(int(bytes) / 1000000000000, 1)) + " TB"
+    elif len(bytes) > 9:
+        throughput = str(round(int(bytes) / 1000000000, 1)) + " GB"
+    elif len(bytes) > 6:
+        throughput = str(round(int(bytes) / 1000000, 1)) + " MB"
+    else:
+        throughput = str(round(int(bytes) / 1000, 1)) + " KB"
     
     return throughput
 
