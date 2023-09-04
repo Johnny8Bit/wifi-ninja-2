@@ -2,22 +2,20 @@ import logging
 from datetime import datetime
 import csv
 
-WLC_HEADINGS = ["date",
-                "time",
-                "clients-now",
-                "clients-max",
-                "lan-interface",
-                "in-bytes",
-                "out-bytes",
-                "in-discards",
-                "in-discards-64",
-                "in-unknown-protos",
-                "in-unknown-protos-64",
-                "out-discards",
-                "per-phy",
-                "top-os",
+MAX_SLOTS = 5 #radio slots
+
+WLC_HEADINGS = ["date", "time", "clients-now", "clients-max", "lan-interface",
+                "in-bytes", "out-bytes", "in-discards", "in-discards-64",
+                "in-unknown-protos", "in-unknown-protos-64", "out-discards", "per-phy", "top-os"
                 ]
 
+AP_HEADINGS = ["date", "time", "ap-name", "radio-mac", "eth-mac",
+               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes"
+                ]
 
 log = logging.getLogger(__name__)
 
@@ -29,11 +27,10 @@ class InitCsv():
         self.path = "../logs/"
         self.stamp = str(datetime.now())[:-7].replace(':', "-").replace(" ", "_")
         self.wlc_filename = f"{self.path}{self.stamp}_WLC.csv"
-        self.ap_2_filename = f"{self.path}{self.stamp}_AP2.csv"
-        self.ap_5_filename = f"{self.path}{self.stamp}_AP5.csv"
-        self.ap_6_filename = f"{self.path}{self.stamp}_AP6.csv"
+        self.ap_filename = f"{self.path}{self.stamp}_AP.csv"
 
         write_csv(self.wlc_filename, WLC_HEADINGS)
+        write_csv(self.ap_filename, AP_HEADINGS)
 
 
 def date_time():
@@ -73,26 +70,42 @@ def wlc_to_csv(wlc_dict):
         row_data.append(wlc_dict["per-phy"])
         row_data.append(wlc_dict["top-os"])
     except KeyError:
-        log.warning(f"No WLC data to write to CSV")
+        log.warning(f"WLC data incomplete. Not writing to CSV")
     else:
         write_csv(init.wlc_filename, row_data)
 
 
 def ap_to_csv(ap_dict):
 
-    row_data = date_time()
-    try:
-        row_data.append(ap_dict["all_clients"])
-        row_data.append(ap_dict["max_clients"])
-        row_data.append(ap_dict["lan_interface"])
-        row_data.append(ap_dict["in_bytes"])
-        row_data.append(ap_dict["out_bytes"])
-        row_data.append(ap_dict["per_phy"])
-        row_data.append(ap_dict["top_os"])
-    except KeyError:
-        log.warning(f"No AP data to write to CSV")
-    else:
-        write_csv(init.ap_filename, row_data)
+    dt = date_time()
+    for ap_mac, ap_data in ap_dict.items():
+        row_data = []
+        row_data.append(dt[0])
+        row_data.append(dt[1])
+        try:
+            row_data.append(ap_data["ap_name"])
+            row_data.append(ap_mac)
+            row_data.append(ap_data["eth_mac"])
+            for slot in range(0, MAX_SLOTS): #radio slots
+                slot = str(slot)
+                row_data.append(f"SLOT {slot}")
+                try:
+                    row_data.append(ap_data[slot]["state"])
+                    row_data.append(ap_data[slot]["mode"])
+                    row_data.append(ap_data[slot]["band"])
+                    row_data.append(ap_data[slot]["channel"])
+                    row_data.append(ap_data[slot]["width"])
+                    row_data.append(ap_data[slot]["stations"])
+                    row_data.append(ap_data[slot]["ch_util"])
+                    row_data.append(ap_data[slot]["ch_changes"])
+                except KeyError:
+                    row_data = row_data + [" ", " ", " ", " ", " ", " ", " ", " "]
+                    log.info(f"No data for {ap_data['ap_name']} slot {slot}") 
+    
+        except KeyError:
+            log.warning(f"AP data incomplete. Not writing to CSV")
+        else:
+            write_csv(init.ap_filename, row_data)
 
 
 init = InitCsv()

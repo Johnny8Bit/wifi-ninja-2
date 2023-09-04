@@ -10,7 +10,8 @@ import fileLib
 NETCONF_CYCLE_LONG = 60 #seconds
 NETCONF_CYCLE_SHORT = 10 #seconds
 
-SAVE_CSV = False
+SAVE_CSV = True
+MAX_SLOTS = 5 #radio slots
 
 AP_CLIENTS_HIGH = 75
 AP_CLIENTS_LOW = 50
@@ -65,6 +66,7 @@ def netconf_collect():
         get_netconf_wireless_rrm_oper()
 
         commsLib.send_to_dashboard("AP", init.ap_data_ops)
+        if SAVE_CSV: fileLib.ap_to_csv(init.ap_data)
 
 
 def get_netconf_wireless_client_oper():
@@ -328,7 +330,7 @@ def sort_rrm_data():
     top_sta_6, top_util_6, top_change_6 = [], [], []
 
     for ap in init.ap_data.keys():
-        for slot in range(0, 5): #radio slots
+        for slot in range(0, MAX_SLOTS): #radio slots
             try:
                 ap_name = init.ap_data[ap]["ap_name"]
                 ap_slot = slot
