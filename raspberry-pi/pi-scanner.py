@@ -1,3 +1,4 @@
+import os
 import re
 import sys
 import json
@@ -7,12 +8,11 @@ import subprocess
 import requests
 
 
-WLAN_INTERFACE = "wlan1"
+WLAN_INTERFACE = "wlan0"
 
-
-DASHBOARD_API_KEY = "12345"
-DASHBOARD_IP = "192.168.6.6"
-DASHBOARD_PORT = "80"
+DASHBOARD_API_KEY = os.environ["DASHBOARD_API_KEY"]
+DASHBOARD_IP = "192.168.6.172"
+DASHBOARD_PORT = "8080"
 
 
 class Sensor():
@@ -37,7 +37,7 @@ def send(parse_input):
     scanner_data["sensor"]["results"] = parse_input
 
     dashboard_api = f"http://{DASHBOARD_IP}:{DASHBOARD_PORT}/PostSensorData"
-    headers = {"api_key" : DASHBOARD_API_KEY}
+    headers = {"Api-Key" : DASHBOARD_API_KEY}
     try:
         requests.post(dashboard_api, headers=headers, data=json.dumps(scanner_data), verify=False, timeout=2)
     except requests.exceptions.ConnectTimeout:
