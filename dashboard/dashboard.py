@@ -39,13 +39,17 @@ def post_sensor_data():
     global sensor_data
     
     received_auth = request.headers.get("api_key")
-    if received_auth == DASHBOARD_API_KEY:
-        received_data = json.loads(request.data)
-        received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
-        sensor_data[request.remote_addr] = received_data
-        return 'OK', 200
-    else:
-        return 'NO', 401
+    #if received_auth == DASHBOARD_API_KEY:
+    #    received_data = json.loads(request.data)
+    #    received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
+    #    sensor_data[request.remote_addr] = received_data
+    #    return 'OK', 200
+    #else:
+    #    return 'NO', 401
+    received_data = json.loads(request.data)
+    received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
+    sensor_data[request.remote_addr] = received_data
+    return 'OK', 200
 
 
 @dashboard.route('/PostWLCData', methods = ['POST'])
@@ -111,4 +115,4 @@ def view_aps_6():
 
 if __name__ == '__main__':
 
-    dashboard.run(host='0.0.0.0', port=80, debug=False)
+    dashboard.run(host='0.0.0.0', port=8080, debug=False)
