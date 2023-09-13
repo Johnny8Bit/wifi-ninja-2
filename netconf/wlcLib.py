@@ -5,13 +5,16 @@ from datetime import datetime
 from collections import Counter, OrderedDict
 
 import commsLib
+import influxLib
 import fileLib
 
 NETCONF_CYCLE_LONG = 60 #seconds
 NETCONF_CYCLE_SHORT = 10 #seconds
 
-SAVE_CSV = True
 MAX_SLOTS = 5 #radio slots
+
+SAVE_CSV = True
+SEND_TO_INFLUX = True
 
 AP_CLIENTS_HIGH = 75
 AP_CLIENTS_LOW = 50
@@ -42,8 +45,8 @@ init = Ninja2()
 
 def netconf_collect():
 
-    short_idle_period = datetime.now() - init.short_lastrun
-    long_idle_period = datetime.now() - init.long_lastrun
+    short_idle_period = datetime.now() - init.short_lastrun #short frequency data collection
+    long_idle_period = datetime.now() - init.long_lastrun #long frequency data collection
 
     if init.short_firstrun or short_idle_period.seconds >= NETCONF_CYCLE_SHORT:
 
@@ -56,6 +59,7 @@ def netconf_collect():
         
         commsLib.send_to_dashboard("WLC", init.wlc_data)
         if SAVE_CSV: fileLib.wlc_to_csv(init.wlc_data)
+        if SEND_TO_INFLUX: influxLib.send_to_influx_wlc(init.wlc_data)
         
     if init.long_firstrun or long_idle_period.seconds >= NETCONF_CYCLE_LONG:
 
@@ -63,10 +67,12 @@ def netconf_collect():
         init.long_lastrun = datetime.now()
 
         get_netconf_wireless_access_point_oper()
+        get_netconf_wireless_ap_cfg()
         get_netconf_wireless_rrm_oper()
 
         commsLib.send_to_dashboard("AP", init.ap_data_ops)
         if SAVE_CSV: fileLib.ap_to_csv(init.ap_data)
+        if SEND_TO_INFLUX: influxLib.send_to_influx_ap(init.ap_data)
 
 
 def get_netconf_wireless_client_oper():
@@ -169,12 +175,14 @@ def get_netconf_interfaces_oper():
     netconf_data = commsLib.netconf_get_x(filter)
     try:
         interface_data = ET.fromstring(netconf_data).find(".//interface")
-    except KeyError:
+    except (KeyError, ET.ParseError):
         log.warning(f"No interface data")
     else:
-        in_octets = change_units(interface_data.find("statistics/in-octets").text)
-        out_octets = change_units(interface_data.find("statistics/out-octets-64").text)
-        
+        in_octets = interface_data.find("statistics/in-octets").text
+        out_octets = interface_data.find("statistics/out-octets-64").text
+        in_octets_units = change_units(in_octets)
+        out_octets_units = change_units(out_octets)
+
         in_discards = int(interface_data.find("statistics/in-discards").text)
         in_discards_64 = int(interface_data.find("statistics/in-discards-64").text)
         in_unknown_protos = int(interface_data.find("statistics/in-unknown-protos").text)
@@ -184,17 +192,20 @@ def get_netconf_interfaces_oper():
         out_discards = int(interface_data.find("statistics/out-discards").text)
         out_drops = out_discards
 
-        interface_data = {"lan-interface" : WLC_MONITOR_INTERFACE,
-                          "in-bytes" : in_octets,
-                          "out-bytes" : out_octets,
-                          "in-drops" : in_drops,
-                          "out-drops" : out_drops,
-                          "out-discards" : out_drops,
-                          "in-discards" : in_discards,
-                          "in-discards-64" : in_discards_64,
-                          "in-unknown-protos" : in_unknown_protos,
-                          "in-unknown-protos-64" : in_unknown_protos_64
-                          }
+        interface_data = {
+            "lan-interface" : WLC_MONITOR_INTERFACE,
+            "in-bytes" : in_octets,
+            "out-bytes" : out_octets,
+            "in-bytes-units" : in_octets_units,
+            "out-bytes-units" : out_octets_units,
+            "in-drops" : in_drops,
+            "out-drops" : out_drops,
+            "out-discards" : out_drops,
+            "in-discards" : in_discards,
+            "in-discards-64" : in_discards_64,
+            "in-unknown-protos" : in_unknown_protos,
+            "in-unknown-protos-64" : in_unknown_protos_64
+        }
 
         init.wlc_data = {**init.wlc_data, **interface_data}
 
@@ -258,7 +269,7 @@ def parse_netconf_ap_name(input_data):
     except KeyError:
         log.warning(f"No AP name data")
     else:
-        if type(ap_name_data) == dict: #Change to list if only a single AP on WLC
+        if type(ap_name_data) in (dict, OrderedDict): #Change to list if only a single AP on WLC
             ap_name_data = [ap_name_data]
 
         for ap in ap_name_data:
@@ -278,10 +289,36 @@ def parse_netconf_ap_ops(input_data):
         for radio in ap_ops_data:
             init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]] = {}
             init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["state"] = radio["oper-state"]
-            init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["mode"] = radio ["radio-mode"]
             init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["band"] = radio["current-active-band"]
-            init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["channel"] = radio["phy-ht-cfg"]["cfg-data"]["curr-freq"]
-            init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["width"] = radio["phy-ht-cfg"]["cfg-data"]["chan-width"]     
+            init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["mode"] = radio ["radio-mode"]
+
+            if radio ["radio-mode"] == "radio-mode-local":
+                init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["channel"] = radio["phy-ht-cfg"]["cfg-data"]["curr-freq"]
+                init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["width"] = radio["phy-ht-cfg"]["cfg-data"]["chan-width"]
+            else:
+                init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["channel"] = ""
+                init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["width"] = ""
+
+
+def get_netconf_wireless_ap_cfg():
+
+    filter = '''
+        <ap-cfg-data xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-wireless-ap-cfg">
+            <ap-tags/>
+        </ap-cfg-data>
+    '''
+
+    netconf_data = commsLib.netconf_get_config(filter)
+    try:
+        ap_cfg_data = netconf_data["data"]["ap-cfg-data"]["ap-tags"]["ap-tag"]
+    except KeyError:
+        log.warning(f"No AP configuration data")
+    else:
+        for ap in ap_cfg_data:
+            for radio_mac in init.ap_data.keys():
+                if init.ap_data[radio_mac]["eth_mac"] == ap["ap-mac"]:
+                    init.ap_data[radio_mac]["site-tag"] = ap["site-tag"]
+                    init.ap_data[radio_mac]["rf-tag"] = ap["rf-tag"]
 
 
 def get_netconf_wireless_rrm_oper():
@@ -384,15 +421,15 @@ def sort_rrm_data():
 def rename_phy(phy):
 
     phy = phy.lstrip("client-").rstrip("-prot")
-    if phy == "dot11ax-6ghz": phy = "Wi-Fi 6 (6GHz)"
-    if phy == "dot11ax-5ghz": phy = "Wi-Fi 6 (5GHz)"
-    if phy == "dot11ax-24ghz": phy = "Wi-Fi 6 (2.4GHz)"
-    if phy == "dot11ac": phy = "Wi-Fi 5"
-    if phy == "dot11n-5-ghz": phy = "Wi-Fi 4 (5GHz)"
-    if phy == "dot11n-24-ghz": phy = "Wi-Fi 4 (2.4GHz)"
-    if phy == "dot11g": phy = "Wi-Fi 3"
-    if phy == "dot11a": phy = "Wi-Fi 2"
-    if phy == "dot11b": phy = "Wi-Fi 1"
+    if phy == "dot11ax-6ghz": phy = "Wi-Fi_6_(6GHz)"
+    if phy == "dot11ax-5ghz": phy = "Wi-Fi_6_(5GHz)"
+    if phy == "dot11ax-24ghz": phy = "Wi-Fi_6_(2.4GHz)"
+    if phy == "dot11ac": phy = "Wi-Fi_5"
+    if phy == "dot11n-5-ghz": phy = "Wi-Fi_4_(5GHz)"
+    if phy == "dot11n-24-ghz": phy = "Wi-Fi_4_(2.4GHz)"
+    if phy == "dot11g": phy = "Wi-Fi_3"
+    if phy == "dot11a": phy = "Wi-Fi_2"
+    if phy == "dot11b": phy = "Wi-Fi_1"
 
     return phy
 

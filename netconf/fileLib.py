@@ -67,8 +67,15 @@ def wlc_to_csv(wlc_dict):
         row_data.append(wlc_dict["in-unknown-protos"])
         row_data.append(wlc_dict["in-unknown-protos-64"])
         row_data.append(wlc_dict["out-discards"])
-        row_data.append(wlc_dict["per-phy"])
-        row_data.append(wlc_dict["top-os"])
+        try:
+            row_data.append(wlc_dict["per-phy"])
+        except KeyError: #append blank cell when no client data exists e.g. 0 clients
+            row_data.append("")
+        try:
+            row_data.append(wlc_dict["top-os"])
+        except KeyError: #append blank cell when no client data exists e.g. 0 clients
+            row_data.append("")
+
     except KeyError:
         log.warning(f"WLC data incomplete. Not writing to CSV")
     else:
