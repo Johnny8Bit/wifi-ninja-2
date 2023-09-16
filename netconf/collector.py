@@ -11,7 +11,7 @@ def run():
     subprocess.run(["echo", "NETCONF collector : Running"])
     try:
         while True:
-            wlcLib.netconf_collect()
+            wlcLib.netconf_loop()
             time.sleep(1)
                 
     except KeyboardInterrupt:

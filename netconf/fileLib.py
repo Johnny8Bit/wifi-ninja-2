@@ -53,7 +53,7 @@ def write_csv(filename, row):
         log.error(f"Unable to append CSV")
 
 
-def wlc_to_csv(wlc_dict):
+def send_to_csv_wlc(wlc_dict):
 
     row_data = date_time()
     try:
@@ -82,7 +82,7 @@ def wlc_to_csv(wlc_dict):
         write_csv(init.wlc_filename, row_data)
 
 
-def ap_to_csv(ap_dict):
+def send_to_csv_ap(ap_dict):
 
     dt = date_time()
     for ap_mac, ap_data in ap_dict.items():

@@ -4,27 +4,17 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from collections import Counter, OrderedDict
 
+import envLib
 import commsLib
 import influxLib
 import fileLib
+import dashboardLib
+
+env = envLib.read_config_file()
+log = logging.getLogger(__name__)
 
 NETCONF_CYCLE_LONG = 60 #seconds
 NETCONF_CYCLE_SHORT = 10 #seconds
-
-MAX_SLOTS = 5 #radio slots
-
-SAVE_CSV = True
-SEND_TO_INFLUX = True
-
-AP_CLIENTS_HIGH = 75
-AP_CLIENTS_LOW = 50
-AP_UTIL_HIGH = 60
-AP_UTIL_LOW = 40
-SEND_TOP = 10
-
-WLC_MONITOR_INTERFACE = "Port-channel1"
-
-log = logging.getLogger(__name__)
 
 
 class Ninja2():
@@ -38,12 +28,12 @@ class Ninja2():
         self.max_clients = 0
         self.wlc_data = {}
         self.ap_data = {}
-        self.ap_data_ops = {}
+        self.ap_data_summary = {}
 
 init = Ninja2()
 
 
-def netconf_collect():
+def netconf_loop():
 
     short_idle_period = datetime.now() - init.short_lastrun #short frequency data collection
     long_idle_period = datetime.now() - init.long_lastrun #long frequency data collection
@@ -57,9 +47,9 @@ def netconf_collect():
         get_netconf_wireless_client_global_oper()
         get_netconf_wireless_client_oper()
         
-        commsLib.send_to_dashboard("WLC", init.wlc_data)
-        if SAVE_CSV: fileLib.wlc_to_csv(init.wlc_data)
-        if SEND_TO_INFLUX: influxLib.send_to_influx_wlc(init.wlc_data)
+        if env["SEND_TO_INFLUX"]: influxLib.send_to_influx_wlc(init.wlc_data)
+        if env["SEND_TO_DASHBOARD"]: dashboardLib.send_to_dashboard_wlc(init.wlc_data)
+        if env["SAVE_CSV"]: fileLib.send_to_csv_wlc(init.wlc_data)
         
     if init.long_firstrun or long_idle_period.seconds >= NETCONF_CYCLE_LONG:
 
@@ -70,10 +60,10 @@ def netconf_collect():
         get_netconf_wireless_ap_cfg()
         get_netconf_wireless_rrm_oper()
 
-        commsLib.send_to_dashboard("AP", init.ap_data_ops)
-        if SAVE_CSV: fileLib.ap_to_csv(init.ap_data)
-        if SEND_TO_INFLUX: influxLib.send_to_influx_ap(init.ap_data)
-
+        if env["SEND_TO_INFLUX"]: influxLib.send_to_influx_ap(init.ap_data)
+        if env["SEND_TO_DASHBOARD"]: dashboardLib.send_to_dashboard_ap(init.ap_data)
+        if env["SAVE_CSV"]: fileLib.send_to_csv_ap(init.ap_data)
+        
 
 def get_netconf_wireless_client_oper():
 
@@ -145,7 +135,7 @@ def parse_netconf_devices(input_data):
         top_os = Counter(os_data)
         top_os_total = sum(top_os.values())
         
-        for tup in top_os.most_common(SEND_TOP):
+        for tup in top_os.most_common(int(env["SEND_TOP"])):
             os_type_data[tup[0]] = f"{int(int(tup[1])/top_os_total*100)} %"
         
         os_type_data = {"top-os" : os_type_data}
@@ -159,7 +149,7 @@ def get_netconf_interfaces_oper():
     filter = f'''
         <interfaces xmlns='http://cisco.com/ns/yang/Cisco-IOS-XE-interfaces-oper'>
             <interface>
-                <name>{WLC_MONITOR_INTERFACE}</name>
+                <name>{env["WLC_MONITOR_INTERFACE"]}</name>
                 <statistics>
                     <in-octets/>
                     <in-discards/>
@@ -193,7 +183,7 @@ def get_netconf_interfaces_oper():
         out_drops = out_discards
 
         interface_data = {
-            "lan-interface" : WLC_MONITOR_INTERFACE,
+            "lan-interface" : env["WLC_MONITOR_INTERFACE"],
             "in-bytes" : in_octets,
             "out-bytes" : out_octets,
             "in-bytes-units" : in_octets_units,
@@ -356,66 +346,6 @@ def get_netconf_wireless_rrm_oper():
             init.ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = radio["load"]["rx-noise-channel-utilization"]
         for slot in ap_radio_slot_data:
             init.ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = slot["radio-data"]["dca-stats"]["chan-changes"]
-    finally:
-        sort_rrm_data()
-
-
-def sort_rrm_data():
-
-    top_sta_2, top_util_2, top_change_2 = [], [], []
-    top_sta_5, top_util_5, top_change_5 = [], [], []
-    top_sta_6, top_util_6, top_change_6 = [], [], []
-
-    for ap in init.ap_data.keys():
-        for slot in range(0, MAX_SLOTS): #radio slots
-            try:
-                ap_name = init.ap_data[ap]["ap_name"]
-                ap_slot = slot
-                ap_ch = init.ap_data[ap][str(slot)]["channel"]
-                ap_sta = int(init.ap_data[ap][str(slot)]["stations"])
-                ap_util = int(init.ap_data[ap][str(slot)]["ch_util"])
-                ap_change = int(init.ap_data[ap][str(slot)]["ch_changes"])
-                ap_change_colour = "grey"
-
-                ap_sta_colour = "orange"
-                if ap_sta < AP_CLIENTS_LOW:
-                    ap_sta_colour = "green"
-                if ap_sta >= AP_CLIENTS_HIGH:
-                    ap_sta_colour = "red"
-
-                ap_util_colour = "orange"
-                if ap_util < AP_UTIL_LOW:
-                    ap_util_colour = "green"
-                if ap_util >= AP_UTIL_HIGH:
-                    ap_util_colour = "red"
-                
-                if init.ap_data[ap][str(slot)]["band"] == "dot11-2-dot-4-ghz-band":    
-                    top_sta_2.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
-                    top_util_2.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
-                    top_change_2.append((ap_name, ap_slot, ap_ch, ap_change_colour, ap_change))
-
-                if init.ap_data[ap][str(slot)]["band"] == "dot11-5-ghz-band":    
-                    top_sta_5.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
-                    top_util_5.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
-                    top_change_5.append((ap_name, ap_slot, ap_ch, ap_change_colour, ap_change))
-
-                if init.ap_data[ap][str(slot)]["band"] == "dot11-6-ghz-band":
-                    top_sta_6.append((ap_name, ap_slot, ap_ch, ap_sta_colour, ap_sta))
-                    top_util_6.append((ap_name, ap_slot, ap_ch, ap_util_colour, ap_util))
-                    top_change_6.append((ap_name, ap_slot, ap_ch, ap_change_colour, ap_change))
-
-            except KeyError:
-                log.info(f"No data for {ap} slot {slot}")
-    
-    init.ap_data_ops["ch_util_2"] = sorted(top_util_2, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_util_5"] = sorted(top_util_5, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_util_6"] = sorted(top_util_6, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["stations_2"] = sorted(top_sta_2, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["stations_5"] = sorted(top_sta_5, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["stations_6"] = sorted(top_sta_6, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_changes_2"] = sorted(top_change_2, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_changes_5"] = sorted(top_change_5, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
-    init.ap_data_ops["ch_changes_6"] = sorted(top_change_6, key=lambda tup: tup[4], reverse=True)[0:SEND_TOP]
 
 
 def rename_phy(phy):
@@ -448,6 +378,3 @@ def change_units(bytes):
         throughput = str(round(int(bytes) / 1000, 1)) + " KB"
     
     return throughput
-
-
-

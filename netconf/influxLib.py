@@ -2,16 +2,16 @@ import time
 import logging
 
 import commsLib
+import envLib
 
-MAX_SLOTS = 5 #radio slots
-
+env = envLib.read_config_file()
 log = logging.getLogger(__name__)
 
 
 def send_to_influx_wlc(wlc_data):
 
     commsLib.send_to_influx(
-        f"wlcTest1,wlcName=WLC9800 "\
+        f"wlcData,wlcName=WLC9800 "\
         f"inBytes={wlc_data['in-bytes']},"\
         f"outBytes={wlc_data['out-bytes']},"\
         f"inDrops={wlc_data['in-drops']},"\
@@ -19,7 +19,7 @@ def send_to_influx_wlc(wlc_data):
     )
 
     commsLib.send_to_influx(
-        f"wlcTest1,wlcName=WLC9800 "\
+        f"wlcData,wlcName=WLC9800 "\
         f"connectedClients={wlc_data['all-clients']},"\
         f"authClients={wlc_data['client-states']['auth']},"\
         f"ipLearnClients={wlc_data['client-states']['iplearn']},"\
@@ -41,7 +41,7 @@ def send_to_influx_wlc(wlc_data):
         "Wi-Fi_2",
         "Wi-Fi_1"
     ]
-    line_protocol = f"wlcTest1,wlcName=WLC9800 "
+    line_protocol = f"wlcData,wlcName=WLC9800 "
     for phy in phy_list:
         try:
             line_protocol += f"{phy}={wlc_data['per-phy'][phy]},"
@@ -57,13 +57,13 @@ def send_to_influx_ap(ap_data):
     all_rf_data_5ghz = ""
     all_rf_data_6ghz = ""
     for ap in ap_data.keys():
-        for slot in range(0, MAX_SLOTS): #radio slots
+        for slot in range(0, int(env["MAX_SLOTS"])):
             slot = str(slot)
             try:
                 if ap_data[ap][slot]["band"] == "dot11-2-dot-4-ghz-band":
                     rf_data_2ghz = (
                         #tags
-                        f"rf2ghz-8,"\
+                        f"rf2ghz,"\
                         f"apName={ap_data[ap]['ap_name']},"\
                         f"radioMode={ap_data[ap][slot]['mode']},"\
                         f"radioSlot={slot},"\
@@ -83,7 +83,7 @@ def send_to_influx_ap(ap_data):
                 elif ap_data[ap][slot]["band"] == "dot11-5-ghz-band":
                     rf_data_5ghz = (
                         #tags
-                        f"rf5ghz-8,"\
+                        f"rf5ghz,"\
                         f"apName={ap_data[ap]['ap_name']},"\
                         f"radioMode={ap_data[ap][slot]['mode']},"\
                         f"radioSlot={slot},"\
@@ -103,7 +103,7 @@ def send_to_influx_ap(ap_data):
                 elif ap_data[ap][slot]["band"] == "dot11-6-ghz-band":
                     rf_data_6ghz = (
                         #tags
-                        f"rf6ghz-8,"\
+                        f"rf6ghz,"\
                         f"apName={ap_data[ap]['ap_name']},"\
                         f"radioMode={ap_data[ap][slot]['mode']},"\
                         f"radioSlot={slot},"\
