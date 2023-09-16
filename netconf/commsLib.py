@@ -11,24 +11,12 @@ import requests
 import envLib
 
 env = envLib.read_config_file()
+log = logging.getLogger(__name__)
 
-#DASHBOARD_IP = "127.0.0.1"
-#DASHBOARD_PORT = "8080"
 DASHBOARD_API_KEY = os.environ["DASHBOARD_API_KEY"]
 INFLUX_API_KEY = os.environ["INFLUX_API_KEY"]
 WLC_USER = os.environ["WLC_USER"]
 WLC_PASS = os.environ["WLC_PASS"]
-
-#INFLUX_IP = "127.0.0.1"
-#INFLUX_PORT = "8086"
-#INFLUX_ORG = "wifininja"
-#INFLUX_BUCKET = "wifininja"
-
-#WLC_HOST = "192.168.6.8"
-#WLC_USER = "netconf"
-#WLC_PASS = "netconf"
-
-log = logging.getLogger(__name__)
 
 
 def send_to_influx(data, precision="s"):

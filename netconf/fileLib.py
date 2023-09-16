@@ -2,7 +2,10 @@ import logging
 from datetime import datetime
 import csv
 
-MAX_SLOTS = 5 #radio slots
+import envLib
+
+env = envLib.read_config_file()
+
 
 WLC_HEADINGS = ["date", "time", "clients-now", "clients-max", "lan-interface",
                 "in-bytes", "out-bytes", "in-discards", "in-discards-64",
@@ -93,7 +96,7 @@ def send_to_csv_ap(ap_dict):
             row_data.append(ap_data["ap_name"])
             row_data.append(ap_mac)
             row_data.append(ap_data["eth_mac"])
-            for slot in range(0, MAX_SLOTS): #radio slots
+            for slot in range(0, int(env["MAX_SLOTS"])):
                 slot = str(slot)
                 row_data.append(f"SLOT {slot}")
                 try:
