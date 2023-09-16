@@ -48,7 +48,7 @@ def netconf_loop():
         get_netconf_wireless_client_oper()
         
         if env["SEND_TO_INFLUX"]: influxLib.send_to_influx_wlc(init.wlc_data)
-        if env["SEND_TO_DASHBOARD"]: dashboardLib.send_to_dashboard_wlc(init.wlc_data)
+        if env["SEND_TO_DASHBOARD"] == "True": dashboardLib.send_to_dashboard_wlc(init.wlc_data)
         if env["SAVE_CSV"]: fileLib.send_to_csv_wlc(init.wlc_data)
         
     if init.long_firstrun or long_idle_period.seconds >= NETCONF_CYCLE_LONG:
@@ -61,7 +61,7 @@ def netconf_loop():
         get_netconf_wireless_rrm_oper()
 
         if env["SEND_TO_INFLUX"]: influxLib.send_to_influx_ap(init.ap_data)
-        if env["SEND_TO_DASHBOARD"]: dashboardLib.send_to_dashboard_ap(init.ap_data)
+        if env["SEND_TO_DASHBOARD"] == "True": dashboardLib.send_to_dashboard_ap(init.ap_data)
         if env["SAVE_CSV"]: fileLib.send_to_csv_ap(init.ap_data)
         
 
