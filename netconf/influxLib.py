@@ -57,7 +57,7 @@ def send_to_influx_ap(env, ap_data):
     all_rf_data_5ghz = ""
     all_rf_data_6ghz = ""
     for ap in ap_data.keys():
-        for slot in range(0, int(env["MAX_SLOTS"])):
+        for slot in range(0, ap_data[ap]["slot-count"]):
             slot = str(slot)
             try:
                 if ap_data[ap][slot]["band"] == "dot11-2-dot-4-ghz-band":
