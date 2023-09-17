@@ -1,26 +1,24 @@
-import logging
-from datetime import datetime
 import csv
+import logging
 
-import envLib
-
-env = envLib.read_config_file()
-
-
-WLC_HEADINGS = ["date", "time", "clients-now", "clients-max", "lan-interface",
-                "in-bytes", "out-bytes", "in-discards", "in-discards-64",
-                "in-unknown-protos", "in-unknown-protos-64", "out-discards", "per-phy", "top-os"
-                ]
-
-AP_HEADINGS = ["date", "time", "ap-name", "radio-mac", "eth-mac",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes"
-                ]
+from datetime import datetime
 
 log = logging.getLogger(__name__)
+
+WLC_HEADINGS = [
+    "date", "time", "clients-now", "lan-interface",
+    "in-bytes", "out-bytes", "in-discards", "in-discards-64",
+    "in-unknown-protos", "in-unknown-protos-64", "out-discards", "per-phy", "top-os"
+]
+
+AP_HEADINGS = [
+    "date", "time", "ap-name", "radio-mac", "eth-mac",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes"
+]
 
 
 class InitCsv():
@@ -61,7 +59,6 @@ def send_to_csv_wlc(wlc_dict):
     row_data = date_time()
     try:
         row_data.append(wlc_dict["all-clients"])
-        row_data.append(wlc_dict["max-clients"])
         row_data.append(wlc_dict["lan-interface"])
         row_data.append(wlc_dict["in-bytes"])
         row_data.append(wlc_dict["out-bytes"])
@@ -96,7 +93,7 @@ def send_to_csv_ap(ap_dict):
             row_data.append(ap_data["ap_name"])
             row_data.append(ap_mac)
             row_data.append(ap_data["eth_mac"])
-            for slot in range(0, int(env["MAX_SLOTS"])):
+            for slot in range(0, ap_data["slot-count"]):
                 slot = str(slot)
                 row_data.append(f"SLOT {slot}")
                 try:

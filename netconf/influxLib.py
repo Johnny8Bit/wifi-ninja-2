@@ -8,9 +8,9 @@ env = envLib.read_config_file()
 log = logging.getLogger(__name__)
 
 
-def send_to_influx_wlc(wlc_data):
+def send_to_influx_wlc(env, wlc_data):
 
-    commsLib.send_to_influx(
+    commsLib.send_to_influx(env,
         f"wlcData,wlcName=WLC9800 "\
         f"inBytes={wlc_data['in-bytes']},"\
         f"outBytes={wlc_data['out-bytes']},"\
@@ -18,7 +18,7 @@ def send_to_influx_wlc(wlc_data):
         f"outDrops={wlc_data['out-drops']} "
     )
 
-    commsLib.send_to_influx(
+    commsLib.send_to_influx(env,
         f"wlcData,wlcName=WLC9800 "\
         f"connectedClients={wlc_data['all-clients']},"\
         f"authClients={wlc_data['client-states']['auth']},"\
@@ -48,16 +48,16 @@ def send_to_influx_wlc(wlc_data):
         except KeyError:
             line_protocol += f"{phy}=0,"
     line_protocol = line_protocol.rstrip(",") + " "
-    commsLib.send_to_influx(line_protocol)
+    commsLib.send_to_influx(env, line_protocol)
 
 
-def send_to_influx_ap(ap_data):
+def send_to_influx_ap(env, ap_data):
 
     all_rf_data_2ghz = ""
     all_rf_data_5ghz = ""
     all_rf_data_6ghz = ""
     for ap in ap_data.keys():
-        for slot in range(0, int(env["MAX_SLOTS"])):
+        for slot in range(0, ap_data[ap]["slot-count"]):
             slot = str(slot)
             try:
                 if ap_data[ap][slot]["band"] == "dot11-2-dot-4-ghz-band":
@@ -123,9 +123,9 @@ def send_to_influx_ap(ap_data):
             except KeyError:
                 continue
 
-    commsLib.send_to_influx(all_rf_data_2ghz)
-    commsLib.send_to_influx(all_rf_data_5ghz)
-    commsLib.send_to_influx(all_rf_data_6ghz)
+    commsLib.send_to_influx(env, all_rf_data_2ghz)
+    commsLib.send_to_influx(env, all_rf_data_5ghz)
+    commsLib.send_to_influx(env, all_rf_data_6ghz)
 
 
 
