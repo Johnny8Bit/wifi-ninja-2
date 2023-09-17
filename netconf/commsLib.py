@@ -1,6 +1,7 @@
 import os
 import re
 import json
+import time
 import logging
 
 from ncclient import manager, transport, operations
@@ -56,6 +57,7 @@ def send_to_dashboard(env, api, data):
 def netconf_get(env, filter): #Using xmltodict
 
     try:
+        start = time.time()
         with manager.connect(host=env["WLC_HOST"],
                              port=830,
                              username=WLC_USER,
@@ -63,16 +65,21 @@ def netconf_get(env, filter): #Using xmltodict
                              device_params={"name":"iosxe"},
                              hostkey_verify=False) as ncc:
             netconf_output = xmltodict.parse(ncc.get(filter=("subtree", filter)).data_xml)
+        end = time.time()
 
     except (transport.errors.SSHError, operations.errors.TimeoutExpiredError):
         netconf_output = {}
         log.error(f"NETCONF error")
+    else:
+        log.warning(f"Netconf query took {round(end - start, 1)}s")
+
     return netconf_output
 
 
 def netconf_get_x(env, filter): #Using XPath
 
     try:
+        start = time.time()
         with manager.connect(host=env["WLC_HOST"],
                              port=830,
                              username=WLC_USER,
@@ -81,16 +88,21 @@ def netconf_get_x(env, filter): #Using XPath
                              hostkey_verify=False) as ncc:
             netconf_output = ncc.get(filter=("subtree", filter)).data_xml
             netconf_output = re.sub('xmlns="[^"]+"', "", netconf_output)
+        end = time.time()
 
     except (transport.errors.SSHError, operations.errors.TimeoutExpiredError):
         netconf_output = ""
         log.error(f"NETCONF error")
+    else:
+        log.warning(f"Netconf query took {round(end - start, 1)}s")
+
     return netconf_output
 
 
 def netconf_get_config(env, filter): #Using xmltodict
 
     try:
+        start = time.time()
         with manager.connect(host=env["WLC_HOST"],
                              port=830,
                              username=WLC_USER,
@@ -98,8 +110,12 @@ def netconf_get_config(env, filter): #Using xmltodict
                              device_params={"name":"iosxe"},
                              hostkey_verify=False) as ncc:
             netconf_output = xmltodict.parse(ncc.get_config(source="running", filter=("subtree", filter)).data_xml)
+        end = time.time()
 
     except (transport.errors.SSHError, operations.errors.TimeoutExpiredError):
         netconf_output = {}
         log.error(f"NETCONF error")
+    else:
+        log.warning(f"Netconf query took {round(end - start, 1)}s")
+
     return netconf_output
