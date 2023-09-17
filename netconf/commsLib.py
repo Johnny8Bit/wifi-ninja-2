@@ -8,9 +8,6 @@ from ncclient import manager, transport, operations
 import xmltodict
 import requests
 
-import envLib
-
-env = envLib.read_config_file()
 log = logging.getLogger(__name__)
 
 DASHBOARD_API_KEY = os.environ["DASHBOARD_API_KEY"]
@@ -19,7 +16,7 @@ WLC_USER = os.environ["WLC_USER"]
 WLC_PASS = os.environ["WLC_PASS"]
 
 
-def send_to_influx(data, precision="s"):
+def send_to_influx(env, data, precision="s"):
 
     influx_api = f'http://{env["INFLUX_IP"]}:{env["INFLUX_PORT"]}/api/v2/write'
     headers = {
@@ -40,7 +37,7 @@ def send_to_influx(data, precision="s"):
         log.error(f"Influx error") 
 
 
-def send_to_dashboard(api, data):
+def send_to_dashboard(env, api, data):
 
     dashboard_api = f'http://{env["DASHBOARD_IP"]}:{env["DASHBOARD_PORT"]}/Post{api}Data'
     headers = {"Api-Key" : DASHBOARD_API_KEY}
@@ -56,7 +53,7 @@ def send_to_dashboard(api, data):
         log.error(f"Dashboard error")
 
 
-def netconf_get(filter): #Using xmltodict
+def netconf_get(env, filter): #Using xmltodict
 
     try:
         with manager.connect(host=env["WLC_HOST"],
@@ -73,7 +70,7 @@ def netconf_get(filter): #Using xmltodict
     return netconf_output
 
 
-def netconf_get_x(filter): #Using XPath
+def netconf_get_x(env, filter): #Using XPath
 
     try:
         with manager.connect(host=env["WLC_HOST"],
@@ -91,7 +88,7 @@ def netconf_get_x(filter): #Using XPath
     return netconf_output
 
 
-def netconf_get_config(filter): #Using xmltodict
+def netconf_get_config(env, filter): #Using xmltodict
 
     try:
         with manager.connect(host=env["WLC_HOST"],

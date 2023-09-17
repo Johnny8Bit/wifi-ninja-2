@@ -9,9 +9,11 @@
 <h5>Total Clients : {{ data["all-clients"] }}</h5>
 {% endif %}
 
+<!-- max-clients removed from collector script -->
 {% if data["max-clients"] is defined %}
 <h5>Max. Clients : {{ data["max-clients"] }}</h5>
 {% endif %}
+<!-- max-clients removed from collector script -->
 
 {% if data["client-states"] is defined %}
 <table class="u-full-width">
