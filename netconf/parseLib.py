@@ -69,6 +69,7 @@ def parse_interfaces_oper(netconf_tree, interface):
         interface_data = ET.fromstring(netconf_tree).find(".//interface")
     except (KeyError, ET.ParseError):
         log.warning(f"No interface data")
+        return {}
     else:
         in_octets = interface_data.find("statistics/in-octets").text
         out_octets = interface_data.find("statistics/out-octets-64").text
