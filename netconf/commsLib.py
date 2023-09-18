@@ -67,7 +67,7 @@ def netconf_get(env, filter): #Using xmltodict
             netconf_output = xmltodict.parse(ncc.get(filter=("subtree", filter)).data_xml)
         end = time.time()
 
-    except (transport.errors.SSHError, operations.errors.TimeoutExpiredError):
+    except (transport.errors.SSHError, operations.errors.TimeoutExpiredError, transport.errors.SessionError):
         netconf_output = {}
         log.error(f"NETCONF error")
     else:
@@ -90,7 +90,7 @@ def netconf_get_x(env, filter): #Using XPath
             netconf_output = re.sub('xmlns="[^"]+"', "", netconf_output)
         end = time.time()
 
-    except (transport.errors.SSHError, operations.errors.TimeoutExpiredError):
+    except (transport.errors.SSHError, operations.errors.TimeoutExpiredError, transport.errors.SessionError):
         netconf_output = ""
         log.error(f"NETCONF error")
     else:
@@ -112,7 +112,7 @@ def netconf_get_config(env, filter): #Using xmltodict
             netconf_output = xmltodict.parse(ncc.get_config(source="running", filter=("subtree", filter)).data_xml)
         end = time.time()
 
-    except (transport.errors.SSHError, operations.errors.TimeoutExpiredError):
+    except (transport.errors.SSHError, operations.errors.TimeoutExpiredError, transport.errors.SessionError):
         netconf_output = {}
         log.error(f"NETCONF error")
     else:
