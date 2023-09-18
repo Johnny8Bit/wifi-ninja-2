@@ -107,6 +107,7 @@ def parse_wireless_client_states(netconf_dict):
         client_state_data = netconf_dict["data"]["client-global-oper-data"]["client-live-stats"]
     except KeyError:
         log.warning(f"No client state data")
+        return {}
     else:
         return {
             "client-states" : {

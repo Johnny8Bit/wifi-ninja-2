@@ -10,25 +10,31 @@ log = logging.getLogger(__name__)
 
 def send_to_influx_wlc(env, wlc_data):
 
-    commsLib.send_to_influx(env,
-        f"wlcData,wlcName=WLC9800 "\
-        f"inBytes={wlc_data['in-bytes']},"\
-        f"outBytes={wlc_data['out-bytes']},"\
-        f"inDrops={wlc_data['in-drops']},"\
-        f"outDrops={wlc_data['out-drops']} "
-    )
+    try:
+        commsLib.send_to_influx(env,
+            f"wlcData,wlcName=WLC9800 "\
+            f"inBytes={wlc_data['in-bytes']},"\
+            f"outBytes={wlc_data['out-bytes']},"\
+            f"inDrops={wlc_data['in-drops']},"\
+            f"outDrops={wlc_data['out-drops']} "
+        )
+    except KeyError:
+        log.warning("Data error sending to Influx")
 
-    commsLib.send_to_influx(env,
-        f"wlcData,wlcName=WLC9800 "\
-        f"connectedClients={wlc_data['all-clients']},"\
-        f"authClients={wlc_data['client-states']['auth']},"\
-        f"ipLearnClients={wlc_data['client-states']['iplearn']},"\
-        f"webAuthClients={wlc_data['client-states']['webauth']},"\
-        f"mobilityClients={wlc_data['client-states']['mobility']},"\
-        f"deleteClients={wlc_data['client-states']['delete']},"\
-        f"runClients={wlc_data['client-states']['run']},"\
-        f"randomMacClients={wlc_data['client-states']['random-mac']} "
-    )
+    try:
+        commsLib.send_to_influx(env,
+            f"wlcData,wlcName=WLC9800 "\
+            f"connectedClients={wlc_data['all-clients']},"\
+            f"authClients={wlc_data['client-states']['auth']},"\
+            f"ipLearnClients={wlc_data['client-states']['iplearn']},"\
+            f"webAuthClients={wlc_data['client-states']['webauth']},"\
+            f"mobilityClients={wlc_data['client-states']['mobility']},"\
+            f"deleteClients={wlc_data['client-states']['delete']},"\
+            f"runClients={wlc_data['client-states']['run']},"\
+            f"randomMacClients={wlc_data['client-states']['random-mac']} "
+        )
+    except KeyError:
+        log.warning("Data error sending to Influx")
 
     phy_list = [
         "Wi-Fi_6_(6GHz)",

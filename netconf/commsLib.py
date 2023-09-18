@@ -31,11 +31,17 @@ def send_to_influx(env, data, precision="s"):
         "precision" : precision
     }
     try:
-        requests.post(influx_api, headers=headers, params=params, data=data)
-    except requests.exceptions.ConnectTimeout:
-        log.error(f"Influx timeout")
+        requests.post(
+            influx_api,
+            headers=headers,
+            params=params,
+            data=data,
+            timeout=3
+        )
+    except requests.exceptions.ReadTimeout:
+        log.error(f"Influx connection timeout")
     except requests.exceptions.ConnectionError:
-        log.error(f"Influx error") 
+        log.error(f"Influx connection error") 
 
 
 def send_to_dashboard(env, api, data):
@@ -43,15 +49,17 @@ def send_to_dashboard(env, api, data):
     dashboard_api = f'http://{env["DASHBOARD_IP"]}:{env["DASHBOARD_PORT"]}/Post{api}Data'
     headers = {"Api-Key" : DASHBOARD_API_KEY}
     try:
-        requests.post(dashboard_api, 
-                      headers=headers, 
-                      data=json.dumps(data), 
-                      verify=False, 
-                      timeout=2)
+        requests.post(
+            dashboard_api,
+            headers=headers,
+            data=json.dumps(data),
+            verify=False,
+            timeout=3
+        )
     except requests.exceptions.ConnectTimeout:
-        log.error(f"Dashboard timeout")
+        log.error(f"Dashboard connection timeout")
     except requests.exceptions.ConnectionError:
-        log.error(f"Dashboard error")
+        log.error(f"Dashboard connection error")
 
 
 def netconf_get(env, filter): #Using xmltodict
