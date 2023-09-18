@@ -191,11 +191,23 @@ def parse_ap_rrm(netconf_dict, ap_data):
         log.warning(f"No AP RRM/Radio data")
     else:
         for radio in ap_rrm_data:
-            ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = radio["load"]["stations"]
-            ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = radio["load"]["rx-noise-channel-utilization"]
+            try:
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = radio["load"]["stations"]
+            except KeyError:
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = "0"
+                log.info("No client count for AP")
+            try:
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = radio["load"]["rx-noise-channel-utilization"]
+            except KeyError:
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = "0"
+                log.info("No channel utilization for AP")
         for slot in ap_radio_slot_data:
-            ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = slot["radio-data"]["dca-stats"]["chan-changes"]
-    
+            try:
+                ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = slot["radio-data"]["dca-stats"]["chan-changes"]
+            except KeyError:
+                ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = "0"
+                log.info("No channel changes for AP")
+
     return ap_data
 
 
