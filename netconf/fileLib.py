@@ -3,7 +3,7 @@ import logging
 
 from datetime import datetime
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("wifininja.fileLib")
 
 WLC_HEADINGS = [
     "date", "time", "clients-now", "lan-interface",

@@ -1,7 +1,7 @@
 import sys
 import logging
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("wifininja.envLib")
 
 
 def read_config_file(config_file="../config.ini"):

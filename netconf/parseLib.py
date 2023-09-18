@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 
 from collections import Counter, OrderedDict
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("wifininja.parseLib")
 
 
 def parse_wireless_clients(netconf_dict):

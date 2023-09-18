@@ -9,7 +9,7 @@ from ncclient import manager, transport, operations
 import xmltodict
 import requests
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("wifininja.commsLib")
 
 DASHBOARD_API_KEY = os.environ["DASHBOARD_API_KEY"]
 INFLUX_API_KEY = os.environ["INFLUX_API_KEY"]
@@ -79,7 +79,7 @@ def netconf_get(env, filter): #Using xmltodict
         netconf_output = {}
         log.error(f"NETCONF error")
     else:
-        log.warning(f"Netconf query took {round(end - start, 1)}s")
+        log.info(f"Netconf query took {round(end - start, 1)}s")
 
     return netconf_output
 
@@ -102,7 +102,7 @@ def netconf_get_x(env, filter): #Using XPath
         netconf_output = ""
         log.error(f"NETCONF error")
     else:
-        log.warning(f"Netconf query took {round(end - start, 1)}s")
+        log.info(f"Netconf query took {round(end - start, 1)}s")
 
     return netconf_output
 
@@ -124,6 +124,6 @@ def netconf_get_config(env, filter): #Using xmltodict
         netconf_output = {}
         log.error(f"NETCONF error")
     else:
-        log.warning(f"Netconf query took {round(end - start, 1)}s")
+        log.info(f"Netconf query took {round(end - start, 1)}s")
 
     return netconf_output

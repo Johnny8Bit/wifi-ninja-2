@@ -10,7 +10,7 @@ import fileLib
 import parseLib
 
 env = envLib.read_config_file()
-log = logging.getLogger(__name__)
+log = logging.getLogger("wifininja.wlcLib")
 
 NETCONF_CYCLE_LONG = 60 #seconds
 NETCONF_CYCLE_SHORT = 10 #seconds
@@ -26,6 +26,7 @@ class Ninja2():
         self.short_firstrun = True
         self.wlc_data = {}
         self.ap_data = {}
+
 
 init = Ninja2()
 
@@ -66,7 +67,7 @@ def netconf_loop():
             dashboardLib.send_to_dashboard_ap(env, init.ap_data)
         if env["SAVE_CSV"] == "True":
             fileLib.send_to_csv_ap(init.ap_data)
-        
+
 
 def get_netconf_wireless_client_oper():
 

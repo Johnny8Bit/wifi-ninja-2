@@ -2,7 +2,7 @@ import logging
 
 import commsLib
 
-log = logging.getLogger(__name__)
+log = logging.getLogger("wifininja.dashboardLib")
 
 
 def send_to_dashboard_wlc(env, wlc_data):

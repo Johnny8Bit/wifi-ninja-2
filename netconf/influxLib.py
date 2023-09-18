@@ -5,7 +5,7 @@ import commsLib
 import envLib
 
 env = envLib.read_config_file()
-log = logging.getLogger(__name__)
+log = logging.getLogger("wifininja.influxLib")
 
 
 def send_to_influx_wlc(env, wlc_data):
