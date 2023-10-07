@@ -9,9 +9,11 @@
 <h5>Total Clients : {{ data["all-clients"] }}</h5>
 {% endif %}
 
+<!-- max-clients removed from collector script -->
 {% if data["max-clients"] is defined %}
 <h5>Max. Clients : {{ data["max-clients"] }}</h5>
 {% endif %}
+<!-- max-clients removed from collector script -->
 
 {% if data["client-states"] is defined %}
 <table class="u-full-width">
@@ -76,7 +78,7 @@
 
 <br>
 {% if data["lan-interface"] is defined %}
-{% if data["in-bytes"] is defined and data["out-bytes"] is defined and data["in-drops"] is defined and data["out-drops"] is defined%}
+{% if data["in-bytes-units"] is defined and data["out-bytes-units"] is defined and data["in-drops"] is defined and data["out-drops"] is defined%}
 <table class="u-full-width">
   <thead>
     <tr>
@@ -90,9 +92,9 @@
   <tbody>
     <tr>
       <td></td>
-      <td>{{ data["in-bytes"] }}</td>
+      <td>{{ data["in-bytes-units"] }}</td>
       <td>{{ data["in-drops"] }}</td>
-      <td>{{ data["out-bytes"] }}</td>
+      <td>{{ data["out-bytes-units"] }}</td>
       <td>{{ data["out-drops"] }}</td>
     </tr>
   </tbody>

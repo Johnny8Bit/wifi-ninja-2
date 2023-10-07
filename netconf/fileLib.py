@@ -1,23 +1,24 @@
-import logging
-from datetime import datetime
 import csv
+import logging
 
-MAX_SLOTS = 5 #radio slots
+from datetime import datetime
 
-WLC_HEADINGS = ["date", "time", "clients-now", "clients-max", "lan-interface",
-                "in-bytes", "out-bytes", "in-discards", "in-discards-64",
-                "in-unknown-protos", "in-unknown-protos-64", "out-discards", "per-phy", "top-os"
-                ]
+log = logging.getLogger("wifininja.fileLib")
 
-AP_HEADINGS = ["date", "time", "ap-name", "radio-mac", "eth-mac",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
-               "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes"
-                ]
+WLC_HEADINGS = [
+    "date", "time", "clients-now", "lan-interface",
+    "in-bytes", "out-bytes", "in-discards", "in-discards-64",
+    "in-unknown-protos", "in-unknown-protos-64", "out-discards", "per-phy", "top-os"
+]
 
-log = logging.getLogger(__name__)
+AP_HEADINGS = [
+    "date", "time", "ap-name", "radio-mac", "eth-mac",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes",
+    "slot", "state", "mode", "band", "channel", "width", "stations", "ch_util", "ch_changes"
+]
 
 
 class InitCsv():
@@ -53,12 +54,11 @@ def write_csv(filename, row):
         log.error(f"Unable to append CSV")
 
 
-def wlc_to_csv(wlc_dict):
+def send_to_csv_wlc(wlc_dict):
 
     row_data = date_time()
     try:
         row_data.append(wlc_dict["all-clients"])
-        row_data.append(wlc_dict["max-clients"])
         row_data.append(wlc_dict["lan-interface"])
         row_data.append(wlc_dict["in-bytes"])
         row_data.append(wlc_dict["out-bytes"])
@@ -67,15 +67,22 @@ def wlc_to_csv(wlc_dict):
         row_data.append(wlc_dict["in-unknown-protos"])
         row_data.append(wlc_dict["in-unknown-protos-64"])
         row_data.append(wlc_dict["out-discards"])
-        row_data.append(wlc_dict["per-phy"])
-        row_data.append(wlc_dict["top-os"])
+        try:
+            row_data.append(wlc_dict["per-phy"])
+        except KeyError: #append blank cell when no client data exists e.g. 0 clients
+            row_data.append("")
+        try:
+            row_data.append(wlc_dict["top-os"])
+        except KeyError: #append blank cell when no client data exists e.g. 0 clients
+            row_data.append("")
+
     except KeyError:
         log.warning(f"WLC data incomplete. Not writing to CSV")
     else:
         write_csv(init.wlc_filename, row_data)
 
 
-def ap_to_csv(ap_dict):
+def send_to_csv_ap(ap_dict):
 
     dt = date_time()
     for ap_mac, ap_data in ap_dict.items():
@@ -86,7 +93,7 @@ def ap_to_csv(ap_dict):
             row_data.append(ap_data["ap_name"])
             row_data.append(ap_mac)
             row_data.append(ap_data["eth_mac"])
-            for slot in range(0, MAX_SLOTS): #radio slots
+            for slot in range(0, ap_data["slot-count"]):
                 slot = str(slot)
                 row_data.append(f"SLOT {slot}")
                 try:
