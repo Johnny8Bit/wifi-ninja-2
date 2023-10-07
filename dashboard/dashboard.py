@@ -1,9 +1,10 @@
+import os
 import json
 from datetime import datetime
 
 from flask import Flask, render_template, request
 
-DASHBOARD_API_KEY = "12345"
+DASHBOARD_API_KEY = os.environ["DASHBOARD_API_KEY"]
 
 dashboard = Flask(__name__)
 
@@ -38,18 +39,14 @@ def post_sensor_data():
 
     global sensor_data
     
-    received_auth = request.headers.get("api_key")
-    #if received_auth == DASHBOARD_API_KEY:
-    #    received_data = json.loads(request.data)
-    #    received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
-    #    sensor_data[request.remote_addr] = received_data
-    #    return 'OK', 200
-    #else:
-    #    return 'NO', 401
-    received_data = json.loads(request.data)
-    received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
-    sensor_data[request.remote_addr] = received_data
-    return 'OK', 200
+    received_auth = request.headers.get("Api-Key")
+    if received_auth == DASHBOARD_API_KEY:
+        received_data = json.loads(request.data)
+        received_data["sensor"]["sensor_lastheard"] = str(datetime.now())[:-7]
+        sensor_data[request.remote_addr] = received_data
+        return 'OK', 200
+    else:
+        return 'NO', 401
 
 
 @dashboard.route('/PostWLCData', methods = ['POST'])
@@ -57,7 +54,7 @@ def post_client_data():
 
     global wlc_data
     
-    received_auth = request.headers.get("api_key")
+    received_auth = request.headers.get("Api-Key")
     if received_auth == DASHBOARD_API_KEY:
         received_data = json.loads(request.data)
         received_data["lastheard"] = str(datetime.now())[:-7]
@@ -72,7 +69,7 @@ def post_ap_data():
 
     global ap_data
     
-    received_auth = request.headers.get("api_key")
+    received_auth = request.headers.get("Api-Key")
     if received_auth == DASHBOARD_API_KEY:
         received_data = json.loads(request.data)
         received_data["lastheard"] = str(datetime.now())[:-7]
