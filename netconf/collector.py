@@ -19,7 +19,7 @@ log.addHandler(log_console)
 
 def run():
 
-    subprocess.run(["echo", "NETCONF collector : Running"])
+    subprocess.run(["echo", "Wi-Fi collector : Running"])
     try:
         while True:
             wlcLib.netconf_loop()
@@ -27,7 +27,7 @@ def run():
                 
     except KeyboardInterrupt:
         subprocess.run(["clear"])
-        subprocess.run(["echo", "NETCONF collector : Stopped"])
+        subprocess.run(["echo", "Wi-Fi collector : Stopped"])
         sys.exit()
 
 

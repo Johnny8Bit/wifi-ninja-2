@@ -8,12 +8,14 @@ import dashboardLib
 import influxLib
 import fileLib
 import parseLib
+import dnacLib
 
 env = envLib.read_config_file()
 log = logging.getLogger("wifininja.wlcLib")
 
 NETCONF_CYCLE_LONG = 60 #seconds
 NETCONF_CYCLE_SHORT = 10 #seconds
+
 
 
 class Ninja2():
@@ -29,6 +31,7 @@ class Ninja2():
 
 
 init = Ninja2()
+dnac = dnacLib.Dna(env)
 
 
 def netconf_loop():
@@ -44,6 +47,9 @@ def netconf_loop():
         get_netconf_interfaces_oper()
         get_netconf_wireless_client_global_oper()
         get_netconf_wireless_client_oper()
+
+        if env["USE_DNAC_API"] == "True":
+            get_dnac_wncd_load()
         
         if env["SEND_TO_INFLUX"] == "True":
             influxLib.send_to_influx_wlc(env, init.wlc_data)
@@ -67,6 +73,16 @@ def netconf_loop():
             dashboardLib.send_to_dashboard_ap(env, init.ap_data)
         if env["SAVE_CSV"] == "True":
             fileLib.send_to_csv_ap(init.ap_data)
+
+
+def get_dnac_wncd_load():
+
+    dnac.get_dnac_token()
+    dnac.get_network_device()
+    dnac.cli_read()
+    dnac.get_file()
+
+    init.wlc_data = {**init.wlc_data, **dnac.parse_wncd()}
 
 
 def get_netconf_wireless_client_oper():

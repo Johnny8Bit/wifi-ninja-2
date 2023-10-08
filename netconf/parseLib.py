@@ -50,7 +50,7 @@ def parse_wireless_devices(netconf_dict):
             try:
                 os_data.append(client_type["device-os"])
             except KeyError:
-                log.info(f"Client not classified")
+                log.info(f"Client OS not available")
         
         top_os = Counter(os_data)
         top_os_total = sum(top_os.values())
@@ -68,37 +68,41 @@ def parse_interfaces_oper(netconf_tree, interface):
     try:
         interface_data = ET.fromstring(netconf_tree).find(".//interface")
     except (KeyError, ET.ParseError):
-        log.warning(f"No interface data")
+        log.warning(f"No WLC interface data")
         return {}
     else:
-        in_octets = interface_data.find("statistics/in-octets").text
-        out_octets = interface_data.find("statistics/out-octets-64").text
-        in_octets_units = change_units(in_octets)
-        out_octets_units = change_units(out_octets)
+        try:
+            in_octets = interface_data.find("statistics/in-octets").text
+            out_octets = interface_data.find("statistics/out-octets-64").text
+            in_octets_units = change_units(in_octets)
+            out_octets_units = change_units(out_octets)
 
-        in_discards = int(interface_data.find("statistics/in-discards").text)
-        in_discards_64 = int(interface_data.find("statistics/in-discards-64").text)
-        in_unknown_protos = int(interface_data.find("statistics/in-unknown-protos").text)
-        in_unknown_protos_64 = int(interface_data.find("statistics/in-unknown-protos-64").text)
-        in_drops = in_discards + in_discards_64 + in_unknown_protos + in_unknown_protos_64
+            in_discards = int(interface_data.find("statistics/in-discards").text)
+            in_discards_64 = int(interface_data.find("statistics/in-discards-64").text)
+            in_unknown_protos = int(interface_data.find("statistics/in-unknown-protos").text)
+            in_unknown_protos_64 = int(interface_data.find("statistics/in-unknown-protos-64").text)
+            in_drops = in_discards + in_discards_64 + in_unknown_protos + in_unknown_protos_64
         
-        out_discards = int(interface_data.find("statistics/out-discards").text)
-        out_drops = out_discards
-
-        return {
-            "lan-interface" : interface,
-            "in-bytes" : in_octets,
-            "out-bytes" : out_octets,
-            "in-bytes-units" : in_octets_units,
-            "out-bytes-units" : out_octets_units,
-            "in-drops" : in_drops,
-            "out-drops" : out_drops,
-            "out-discards" : out_drops,
-            "in-discards" : in_discards,
-            "in-discards-64" : in_discards_64,
-            "in-unknown-protos" : in_unknown_protos,
-            "in-unknown-protos-64" : in_unknown_protos_64
-        }
+            out_discards = int(interface_data.find("statistics/out-discards").text)
+            out_drops = out_discards
+        except AttributeError:
+            log.warning(f"Bad WLC interface data")
+            return {}
+        else:
+            return {
+                "lan-interface" : interface,
+                "in-bytes" : in_octets,
+                "out-bytes" : out_octets,
+                "in-bytes-units" : in_octets_units,
+                "out-bytes-units" : out_octets_units,
+                "in-drops" : in_drops,
+                "out-drops" : out_drops,
+                "out-discards" : out_drops,
+                "in-discards" : in_discards,
+                "in-discards-64" : in_discards_64,
+                "in-unknown-protos" : in_unknown_protos,
+                "in-unknown-protos-64" : in_unknown_protos_64
+            }
 
 
 def parse_wireless_client_states(netconf_dict):
@@ -176,8 +180,16 @@ def parse_ap_cfg(netconf_dict, ap_data):
         for ap in ap_cfg_data:
             for radio_mac in ap_data.keys():
                 if ap_data[radio_mac]["eth_mac"] == ap["ap-mac"]:
-                    ap_data[radio_mac]["site-tag"] = ap["site-tag"]
-                    ap_data[radio_mac]["rf-tag"] = ap["rf-tag"]
+                    try:
+                        ap_data[radio_mac]["site-tag"] = ap["site-tag"]
+                    except KeyError:
+                        log.warning(f"AP {ap['ap-mac']} no site-tag value")
+                        ap_data[radio_mac]["site-tag"] = "null"
+                    try:
+                        ap_data[radio_mac]["rf-tag"] = ap["rf-tag"]
+                    except KeyError:
+                        log.warning(f"AP {ap['ap-mac']} no rf-tag value")
+                        ap_data[radio_mac]["rf-tag"] = "null"
     
     return ap_data
 

@@ -11,6 +11,18 @@ log = logging.getLogger("wifininja.influxLib")
 def send_to_influx_wlc(env, wlc_data):
 
     try:
+        load_data = f"wlcData,wlcName=WLC9800 "
+        for wncd in wlc_data["wncd_load"]:
+            load_data += f"{wncd[1]}={wncd[0]},"
+        
+        load_data = load_data.rstrip(",") + " "
+
+        commsLib.send_to_influx(env, load_data)
+
+    except KeyError:
+        log.warning("Data error sending to Influx (WNCD load)")
+
+    try:
         commsLib.send_to_influx(env,
             f"wlcData,wlcName=WLC9800 "\
             f"inBytes={wlc_data['in-bytes']},"\
@@ -19,7 +31,7 @@ def send_to_influx_wlc(env, wlc_data):
             f"outDrops={wlc_data['out-drops']} "
         )
     except KeyError:
-        log.warning("Data error sending to Influx")
+        log.warning("Data error sending to Influx (WLC Interface stats)")
 
     try:
         commsLib.send_to_influx(env,
@@ -34,7 +46,7 @@ def send_to_influx_wlc(env, wlc_data):
             f"randomMacClients={wlc_data['client-states']['random-mac']} "
         )
     except KeyError:
-        log.warning("Data error sending to Influx")
+        log.warning("Data error sending to Influx (Client states)")
 
     phy_list = [
         "Wi-Fi_6_(6GHz)",
