@@ -1,4 +1,5 @@
 import time
+import json
 import logging
 
 import commsLib
@@ -74,6 +75,7 @@ def send_to_influx_ap(env, ap_data):
     all_rf_data_2ghz = ""
     all_rf_data_5ghz = ""
     all_rf_data_6ghz = ""
+    count_rf_data_24, count_rf_data_5, count_rf_data_6 = 0, 0, 0
     for ap in ap_data.keys():
         for slot in range(0, ap_data[ap]["slot-count"]):
             slot = str(slot)
@@ -97,6 +99,7 @@ def send_to_influx_ap(env, ap_data):
                         f"\n"
                     )
                     all_rf_data_2ghz += rf_data_2ghz
+                    count_rf_data_24 += 1
 
                 elif ap_data[ap][slot]["band"] == "dot11-5-ghz-band":
                     rf_data_5ghz = (
@@ -117,6 +120,7 @@ def send_to_influx_ap(env, ap_data):
                         f"\n"
                     )
                     all_rf_data_5ghz += rf_data_5ghz
+                    count_rf_data_5 += 1
 
                 elif ap_data[ap][slot]["band"] == "dot11-6-ghz-band":
                     rf_data_6ghz = (
@@ -137,13 +141,16 @@ def send_to_influx_ap(env, ap_data):
                         f"\n"
                     )
                     all_rf_data_6ghz += rf_data_6ghz
+                    count_rf_data_6 += 1
 
             except KeyError:
                 continue
-
+            
     commsLib.send_to_influx(env, all_rf_data_2ghz)
     commsLib.send_to_influx(env, all_rf_data_5ghz)
     commsLib.send_to_influx(env, all_rf_data_6ghz)
 
+    log.info(f"2.4GHz slots: {count_rf_data_24}, 5GHz slots: {count_rf_data_5}, 6GHz slots: {count_rf_data_6}")
 
-
+    with open('data.json', 'w', encoding='utf-8') as f:
+        json.dump(ap_data, f, indent=4) #Save JSON containing last data sent to Influx
