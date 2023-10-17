@@ -88,6 +88,7 @@ class Dna():
 
         retry_time = 3 #sec
         wait_timer = 0
+        fileid = ""
         while wait_timer < 9:
             self.get_task()
             if self.task_progress == "CLI Runner request creation":
@@ -98,7 +99,7 @@ class Dna():
                 try:
                     fileid = json.loads(self.task_progress)["fileId"]
                 except json.decoder.JSONDecodeError:
-                    fileid = ""
+                    pass
                 break
         return fileid
 
