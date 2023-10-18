@@ -64,7 +64,7 @@ def netconf_loop():
         init.long_lastrun = datetime.now()
 
         get_netconf_wireless_access_point_oper()
-        get_netconf_wireless_ap_cfg()
+        #get_netconf_wireless_ap_cfg() #site/rf tag data is collected from ops, not cfg
         get_netconf_wireless_rrm_oper()
 
         if env["SEND_TO_INFLUX"] == "True":
