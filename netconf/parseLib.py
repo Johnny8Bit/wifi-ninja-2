@@ -224,19 +224,22 @@ def parse_ap_rrm(netconf_dict, ap_data):
             try:
                 ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = radio["load"]["stations"]
             except KeyError:
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = "0"
+                #ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = "0"
                 log.info("No client count for AP")
+                continue
             try:
                 ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = radio["load"]["rx-noise-channel-utilization"]
             except KeyError:
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = "0"
+                #ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = "0"
                 log.info("No channel utilization for AP")
+                continue
         for slot in ap_radio_slot_data:
             try:
                 ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = slot["radio-data"]["dca-stats"]["chan-changes"]
             except KeyError:
-                ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = "0"
+                #ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = "0"
                 log.info("No channel changes for AP")
+                continue
 
     return ap_data
 
