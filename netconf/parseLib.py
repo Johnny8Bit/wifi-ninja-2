@@ -50,7 +50,8 @@ def parse_wireless_devices(netconf_dict):
             try:
                 os_data.append(client_type["device-os"])
             except KeyError:
-                log.info(f"Client OS not available")
+                pass
+                #log.info(f"Client OS not available")
         
         top_os = Counter(os_data)
         top_os_total = sum(top_os.values())
