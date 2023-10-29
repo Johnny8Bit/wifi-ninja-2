@@ -1,4 +1,0 @@
-ncclient
-xmltodict
-requests
-flask
