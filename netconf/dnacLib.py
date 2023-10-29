@@ -66,7 +66,7 @@ class Dna():
                                         data=data,
                                         verify=False
                                         ).json()["response"]["taskId"]
-        except requests.exceptions.ConnectionError:
+        except (requests.exceptions.ConnectionError, requests.exceptions.JSONDecodeError):
             self.taskid = ""
 
 
@@ -88,6 +88,7 @@ class Dna():
 
         retry_time = 3 #sec
         wait_timer = 0
+        fileid = ""
         while wait_timer < 9:
             self.get_task()
             if self.task_progress == "CLI Runner request creation":
@@ -98,7 +99,7 @@ class Dna():
                 try:
                     fileid = json.loads(self.task_progress)["fileId"]
                 except json.decoder.JSONDecodeError:
-                    fileid = ""
+                    pass
                 break
         return fileid
 
@@ -112,7 +113,7 @@ class Dna():
                                             headers=headers, 
                                             verify=False
                                             ).json()[0]["commandResponses"]["SUCCESS"][self.wncd_cli]
-        except requests.exceptions.ConnectionError:
+        except (requests.exceptions.ConnectionError, requests.exceptions.JSONDecodeError):
             self.wncd_output = ""
     
 

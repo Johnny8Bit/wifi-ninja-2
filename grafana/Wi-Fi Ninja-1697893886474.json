@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 6,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -38,7 +38,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "",
       "fieldConfig": {
@@ -52,8 +52,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "blue"
               }
             ]
           },
@@ -82,7 +81,7 @@
         },
         "textMode": "value"
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -99,7 +98,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "",
       "fieldConfig": {
@@ -113,8 +112,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "blue",
-                "value": null
+                "color": "blue"
               }
             ]
           },
@@ -143,7 +141,7 @@
         },
         "textMode": "value"
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -160,7 +158,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "5 Min",
       "fieldConfig": {
@@ -175,8 +173,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -210,7 +207,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -227,7 +224,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "5 Min",
       "fieldConfig": {
@@ -242,8 +239,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -277,7 +273,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -294,7 +290,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "5 Min",
       "fieldConfig": {
@@ -309,8 +305,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -344,7 +339,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -361,7 +356,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "5 Min",
       "fieldConfig": {
@@ -376,8 +371,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -411,7 +405,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -428,7 +422,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "5 Min",
       "fieldConfig": {
@@ -443,8 +437,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -478,7 +471,7 @@
         "showThresholdLabels": false,
         "showThresholdMarkers": false
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -508,7 +501,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "",
       "fieldConfig": {
@@ -558,8 +551,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -599,17 +591,27 @@
         }
       ],
       "title": "Connected Clients",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.*?) WLC9800",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "continuous-blues"
+            "fixedColor": "blue",
+            "mode": "fixed"
           },
           "decimals": 0,
           "mappings": [],
@@ -617,12 +619,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
+                "color": "green"
               }
             ]
           }
@@ -651,14 +648,14 @@
         "showUnfilled": true,
         "valueMode": "color"
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
             "type": "influxdb",
             "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
           },
-          "query": "from(bucket: \"wifininja\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"wlcData\")\n  |> filter(fn: (r) => r[\"_field\"] == \"authClients\" or r[\"_field\"] == \"deleteClients\" or r[\"_field\"] == \"ipLearnClients\" or r[\"_field\"] == \"mobilityClients\" or r[\"_field\"] == \"randomMacClients\" or r[\"_field\"] == \"runClients\" or r[\"_field\"] == \"webAuthClients\")\n  |> filter(fn: (r) => r[\"wlcName\"] == \"WLC9800\")\n  |> yield()\n",
+          "query": "from(bucket: \"wifininja\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"wlcData\")\n  |> filter(fn: (r) => r[\"_field\"] == \"authClients\" or r[\"_field\"] == \"deleteClients\" or r[\"_field\"] == \"ipLearnClients\" or r[\"_field\"] == \"mobilityClients\" or r[\"_field\"] == \"runClients\" or r[\"_field\"] == \"webAuthClients\")\n  |> filter(fn: (r) => r[\"wlcName\"] == \"WLC9800\")\n  |> yield()\n",
           "refId": "A"
         }
       ],
@@ -677,7 +674,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "",
       "fieldConfig": {
@@ -703,12 +700,9 @@
               "options": {
                 "mode": "exclude",
                 "names": [
-                  "Wi-Fi_4_(2.4GHz)",
                   "Wi-Fi_4_(5GHz)",
                   "Wi-Fi_5",
-                  "Wi-Fi_6_(2.4GHz)",
-                  "Wi-Fi_6_(5GHz)",
-                  "Wi-Fi_6_(6GHz)"
+                  "Wi-Fi_6_(5GHz)"
                 ],
                 "prefix": "All except:",
                 "readOnly": true
@@ -783,17 +777,17 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "light-blue",
+            "fixedColor": "dark-green",
             "mode": "shades"
           },
           "custom": {
             "axisCenteredZero": false,
-            "axisColorMode": "series",
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -828,8 +822,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -869,7 +862,7 @@
           "refId": "A"
         }
       ],
-      "title": "Clients - Site Tag (North)",
+      "title": "Clients - Per Location (SiteTag: North)",
       "transformations": [
         {
           "id": "calculateField",
@@ -887,17 +880,17 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "light-blue",
+            "fixedColor": "dark-green",
             "mode": "shades"
           },
           "custom": {
             "axisCenteredZero": false,
-            "axisColorMode": "series",
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -932,8 +925,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -973,7 +965,7 @@
           "refId": "A"
         }
       ],
-      "title": "Clients - Site Tag (South)",
+      "title": "Clients - Per Location (SiteTag: South)",
       "transformations": [
         {
           "id": "calculateField",
@@ -991,17 +983,17 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "light-blue",
+            "fixedColor": "dark-green",
             "mode": "shades"
           },
           "custom": {
             "axisCenteredZero": false,
-            "axisColorMode": "series",
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1036,8 +1028,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1077,7 +1068,7 @@
           "refId": "A"
         }
       ],
-      "title": "Clients - Site Tag (East)",
+      "title": "Clients - Per Location (SiteTag: East)",
       "transformations": [
         {
           "id": "calculateField",
@@ -1095,17 +1086,17 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
           "color": {
-            "fixedColor": "light-blue",
+            "fixedColor": "dark-green",
             "mode": "shades"
           },
           "custom": {
             "axisCenteredZero": false,
-            "axisColorMode": "series",
+            "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
@@ -1140,8 +1131,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1181,7 +1171,7 @@
           "refId": "A"
         }
       ],
-      "title": "Clients - Site Tag (West)",
+      "title": "Clients - Per Location (SiteTag: West)",
       "transformations": [
         {
           "id": "calculateField",
@@ -1212,7 +1202,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
@@ -1258,8 +1248,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -1314,7 +1303,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
@@ -1360,8 +1349,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -1416,7 +1404,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "fieldConfig": {
         "defaults": {
@@ -1462,8 +1450,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -1518,7 +1505,7 @@
     {
       "datasource": {
         "type": "influxdb",
-        "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
       },
       "description": "",
       "fieldConfig": {
@@ -1537,7 +1524,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 30,
+        "h": 134,
         "w": 24,
         "x": 0,
         "y": 43
@@ -1560,7 +1547,9 @@
         "exemplars": {
           "color": "rgba(255,0,255,0.7)"
         },
-        "filterValues": {},
+        "filterValues": {
+          "le": 1e-9
+        },
         "legend": {
           "show": true
         },
@@ -1577,7 +1566,7 @@
           "reverse": false
         }
       },
-      "pluginVersion": "10.1.4",
+      "pluginVersion": "10.1.1",
       "targets": [
         {
           "datasource": {
@@ -1588,7 +1577,94 @@
           "refId": "A"
         }
       ],
-      "title": "Channel Utilization - 5GHz",
+      "title": "Channel Utilization (per radio) - 5GHz",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": ".*?apName=\"(.*?)\".*",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "heatmap"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "f257cac0-840c-4c41-96d7-83ebea2dd46e"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "scaleDistribution": {
+              "type": "linear"
+            }
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 134,
+        "w": 24,
+        "x": 0,
+        "y": 177
+      },
+      "id": 24,
+      "options": {
+        "calculate": false,
+        "cellGap": 0,
+        "color": {
+          "exponent": 0.5,
+          "fill": "dark-orange",
+          "max": 200,
+          "min": 0,
+          "mode": "scheme",
+          "reverse": false,
+          "scale": "exponential",
+          "scheme": "RdYlBu",
+          "steps": 16
+        },
+        "exemplars": {
+          "color": "rgba(255,0,255,0.7)"
+        },
+        "filterValues": {
+          "le": 1e-9
+        },
+        "legend": {
+          "show": true
+        },
+        "rowsFrame": {
+          "layout": "unknown"
+        },
+        "tooltip": {
+          "show": false,
+          "yHistogram": false
+        },
+        "yAxis": {
+          "axisPlacement": "left",
+          "decimals": 0,
+          "reverse": false
+        }
+      },
+      "pluginVersion": "10.1.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "e45cc6dc-5642-443d-b566-a1cc76bb9053"
+          },
+          "query": "from(bucket: \"wifininja\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"rf5ghz\")\n  |> filter(fn: (r) => r[\"radioMode\"] == \"radio-mode-local\")\n  |> filter(fn: (r) => r[\"radioState\"] == \"radio-up\")\n  |> filter(fn: (r) => r[\"_field\"] == \"radioStas\")\n  |> yield()",
+          "refId": "A"
+        }
+      ],
+      "title": "Connected Clients (per radio) - 5GHz",
       "transformations": [
         {
           "id": "renameByRegex",
@@ -1609,13 +1685,13 @@
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Wi-Fi Ninja",
   "uid": "f2e1f618-b764-4e5f-b577-4b1f890cf03c",
-  "version": 6,
+  "version": 2,
   "weekStart": ""
 }

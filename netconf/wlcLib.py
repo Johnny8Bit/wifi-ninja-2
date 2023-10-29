@@ -13,8 +13,8 @@ import dnacLib
 env = envLib.read_config_file()
 log = logging.getLogger("wifininja.wlcLib")
 
-NETCONF_CYCLE_LONG = 60 #seconds
-NETCONF_CYCLE_SHORT = 10 #seconds
+NETCONF_CYCLE_LONG = 300 #seconds
+NETCONF_CYCLE_SHORT = 300 #seconds
 
 
 
@@ -64,7 +64,7 @@ def netconf_loop():
         init.long_lastrun = datetime.now()
 
         get_netconf_wireless_access_point_oper()
-        get_netconf_wireless_ap_cfg()
+        #get_netconf_wireless_ap_cfg() #site/rf tag data is collected from ops, not cfg
         get_netconf_wireless_rrm_oper()
 
         if env["SEND_TO_INFLUX"] == "True":
@@ -161,12 +161,24 @@ def get_netconf_wireless_access_point_oper():
                     </cfg-data>
                 </phy-ht-cfg>
             </radio-oper-data>
+            <capwap-data>
+            <wtp-mac/>
+            <tag-info>
+                <site-tag>
+                    <site-tag-name/>
+                </site-tag>
+                <rf-tag>
+                    <rf-tag-name/>
+                </rf-tag>
+            </tag-info>
+        </capwap-data>
         </access-point-oper-data>
     '''
     netconf_data = commsLib.netconf_get(env, filter)
 
     init.ap_data = parseLib.parse_ap_name(netconf_data)
-    init.ap_data = parseLib.parse_ap_ops(netconf_data, init.ap_data)
+    init.ap_data = parseLib.parse_ap_ops_radio(netconf_data, init.ap_data)
+    init.ap_data = parseLib.parse_ap_ops_capwap(netconf_data, init.ap_data)
 
 
 def get_netconf_wireless_ap_cfg():

@@ -147,27 +147,44 @@ def parse_ap_name(netconf_dict):
     return ap_data
 
 
-def parse_ap_ops(netconf_dict, ap_data):
+def parse_ap_ops_radio(netconf_dict, ap_data):
 
     try:
         ap_ops_data = netconf_dict["data"]["access-point-oper-data"]["radio-oper-data"]
     except KeyError:
-        log.warning(f"No AP operational data")
+        log.warning(f"No AP operational radio data")
     else:
         for radio in ap_ops_data:
-            ap_data[radio["wtp-mac"]]["slot-count"] += 1
-            ap_data[radio["wtp-mac"]][radio["radio-slot-id"]] = {}
-            ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["state"] = radio["oper-state"]
-            ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["band"] = radio["current-active-band"]
-            ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["mode"] = radio ["radio-mode"]
+            try:
+                ap_data[radio["wtp-mac"]]["slot-count"] += 1
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]] = {}
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["state"] = radio["oper-state"]
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["band"] = radio["current-active-band"]
+                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["mode"] = radio ["radio-mode"]
 
-            if radio ["radio-mode"] == "radio-mode-local":
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["channel"] = radio["phy-ht-cfg"]["cfg-data"]["curr-freq"]
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["width"] = radio["phy-ht-cfg"]["cfg-data"]["chan-width"]
-            else:
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["channel"] = ""
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["width"] = ""
+                if radio ["radio-mode"] == "radio-mode-local":
+                    ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["channel"] = radio["phy-ht-cfg"]["cfg-data"]["curr-freq"]
+                    ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["width"] = radio["phy-ht-cfg"]["cfg-data"]["chan-width"]
+                else:
+                    ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["channel"] = ""
+                    ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["width"] = ""
+            except KeyError:
+                continue #Script crashed at 05:15 on PSV WLC on line 158
     
+    return ap_data
+
+
+def parse_ap_ops_capwap(netconf_dict, ap_data):
+
+    try:
+        ap_ops_data = netconf_dict["data"]["access-point-oper-data"]["capwap-data"]
+    except KeyError:
+        log.warning(f"No AP operational capwap data")
+    else:
+        for ap in ap_ops_data:            
+            ap_data[ap["wtp-mac"]]["site-tag"] = ap["tag-info"]["site-tag"]["site-tag-name"]
+            ap_data[ap["wtp-mac"]]["rf-tag"] = ap["tag-info"]["rf-tag"]["rf-tag-name"]
+
     return ap_data
 
 
@@ -207,19 +224,22 @@ def parse_ap_rrm(netconf_dict, ap_data):
             try:
                 ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = radio["load"]["stations"]
             except KeyError:
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = "0"
+                #ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["stations"] = "0"
                 log.info("No client count for AP")
+                continue
             try:
                 ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = radio["load"]["rx-noise-channel-utilization"]
             except KeyError:
-                ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = "0"
+                #ap_data[radio["wtp-mac"]][radio["radio-slot-id"]]["ch_util"] = "0"
                 log.info("No channel utilization for AP")
+                continue
         for slot in ap_radio_slot_data:
             try:
                 ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = slot["radio-data"]["dca-stats"]["chan-changes"]
             except KeyError:
-                ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = "0"
+                #ap_data[slot["wtp-mac"]][slot["radio-slot-id"]]["ch_changes"] = "0"
                 log.info("No channel changes for AP")
+                continue
 
     return ap_data
 
